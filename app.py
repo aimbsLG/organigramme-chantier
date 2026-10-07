@@ -436,4 +436,126 @@ def generer_presentation(donnees):
     cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
     cadre_moe.fill.solid()
     cadre_moe.fill.fore_color.rgb = COLOR_WHITE
-    cadre_moe.line.color.rgb = RGB
+    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
+    cadre_moe.shadow.inherit = False
+    tf_cadre = cadre_moe.text_frame
+    p_cadre = tf_cadre.paragraphs[0]
+    p_cadre.text = "Équipe détaillée en Phase Conception"
+    p_cadre.font.name = "Poppins"
+    p_cadre.font.size = Pt(10)
+    p_cadre.font.color.rgb = COLOR_TEXT_DARK
+    p_cadre.alignment = PP_ALIGN.CENTER
+
+    # CONDUCTEURS TRAVAUX
+    conducteurs = donnees.get("conducteurs_travaux", [])[:3]
+    if len(conducteurs) > 0:
+        largeur_bloc = Inches(3.00)
+        espace_horizontal = Inches(0.35)
+        X_DEBUT = Inches(4.00)
+        X_FIN = Inches(14.20)
+        CENTRE_ZONE = X_DEBUT + ((X_FIN - X_DEBUT) / 2)
+        largeur_totale = (len(conducteurs) * largeur_bloc) + ((len(conducteurs) - 1) * espace_horizontal)
+        x_depart = CENTRE_ZONE - (largeur_totale / 2)
+
+        type_orga = donnees.get("structure_type", "Zones")
+        prefix = "ZONE" if type_orga == "Zones" else "CE"
+
+        for idx, cond in enumerate(conducteurs):
+            x_colonne = x_depart + idx * (largeur_bloc + espace_horizontal)
+            ajouter_titre_section_pptx(slide2, f"PRODUCTION - {cond['secteur'].upper()}", x_colonne, Inches(3.85), largeur_bloc, Inches(0.45), COLOR_SAND, COLOR_RED)
+            ajouter_fiche_personne_pptx(slide2, "CTX Principal", cond["nom"], x_colonne + (largeur_bloc / 2) - (fiche_w / 2), Inches(4.96), fiche_w, fiche_h)
+
+    # POLE SUPPORT S2
+    ajouter_titre_section_pptx(slide2, "POLE SUPPORT", CENTRE_PAGE - (Inches(2.4) / 2), Inches(6.20), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+    x_origine_s2 = Inches(5.44)
+    coords_support_s2 = [x_origine_s2, x_origine_s2 + Inches(1.60), x_origine_s2 + Inches(3.20)]
+    for idx, service in enumerate(donnees["services_internes"]):
+        if idx < len(coords_support_s2):
+            ajouter_fiche_personne_pptx(slide2, service["poste"], service["nom"], coords_support_s2[idx], Inches(7.28), fiche_w, fiche_h)
+
+    path_final = "organigramme_final.pptx"
+    prs.save(path_final)
+    return path_final
+
+# ============================================================
+# INTERFACE WEB STREAMLIT
+# ============================================================
+def parser_texte_liste(texte, cls_role="poste", cls_nom="nom"):
+    lignes = texte.split('\n')
+    resultats = []
+    for ligne in lignes:
+        if "/" in ligne:
+            nom, role = ligne.split('/', 1)
+            resultats.append({cls_nom: nom.strip(), cls_role: role.strip()})
+    return resultats
+
+col1, col2 = st.columns([1, 2])
+
+with col1:
+    st.header("1. Importer les images")
+    st.info("Insérez vos logos (Lg.png, Machine.png, Engrenage.png...) et photos.")
+    fichiers_images = st.file_uploader("Glissez vos fichiers ici", accept_multiple_files=True, type=['png', 'jpg', 'jpeg'])
+    
+    if fichiers_images:
+        for f in fichiers_images:
+            with open(f.name, "wb") as f_out:
+                f_out.write(f.getbuffer())
+
+    st.header("2. Informations du chantier")
+    moa = st.text_input("Maître d'Ouvrage (MOA)", "Finances Publiques")
+    dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "Alexandre MARTIN")
+    
+    copil = st.text_area("Comité de Pilotage (Nom / Rôle)", "Rémi HOVAERE / Directeur National\nJean-Stéphane DIDIER / DGA\nCharlotte VIGUIER / Dir. Grands Projets\nMicaël GONCALVES / Dir. Excellence")
+    
+    moe = st.text_area("Pôle MOE (Nom / Entreprise)", "Sophie VALENTIN / Architecte (RDA Architecture)\nPierre DUBOIS / BE (BET Structure)")
+    
+    co_traitant = st.text_input("Co-traitant", "Eiffage Construction")
+    
+    support = st.text_area("Pôle Support (Nom / Rôle)", "Emmanuel SAURIN / Réf. Bas Carbone\nJérôme TRANCHANT / QSE Sécurité\nJérôme JUNIQUE / Chef de service Méthode")
+    
+    maint_contact = st.text_input("Mainteneur (Contact)", "Thomas ROUSSEL")
+    maint_ent = st.text_input("Mainteneur (Entreprise)", "Dalkia")
+    
+    st.subheader("Uniquement Phase Réalisation")
+    dir_chantier = st.text_input("Directeur de Chantier", "Marc DURAND")
+    
+    # <-- CORRECTION : RETOUR DU CHOIX D'ORGANISATION
+    type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"])
+    
+    if type_orga == "Zones":
+        label_aide = "Format: Prénom Nom / Nom de la zone"
+        val_defaut = "Julien FAURE / Bâtiment A\nÉlodie MICHEL / Infrastructures"
+    else:
+        label_aide = "Format: Prénom Nom / Corps d'état (ex: GO)"
+        val_defaut = "Julien FAURE / GO\nÉlodie MICHEL / CE Archi"
+        
+    conducteurs = st.text_area(f"Production / Conducteurs ({label_aide})", val_defaut)
+
+with col2:
+    st.header("3. Générer le fichier")
+    st.write("Cliquez sur le bouton pour compiler les informations et générer votre PowerPoint avec le design d'origine complet.")
+    
+    if st.button("Générer mon Organigramme PPTX", type="primary"):
+        donnees = {
+            "moa": moa,
+            "direction": {"nom": dir_projet, "poste": "Directeur de Projet"},
+            "copil": parser_texte_liste(copil),
+            "moe": parser_texte_liste(moe, cls_role="role"),
+            "co_traitant": co_traitant,
+            "services_internes": parser_texte_liste(support),
+            "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
+            "directeur_chantier": dir_chantier,
+            "structure_type": type_orga, # <-- Ajout du choix à l'export
+            "conducteurs_travaux": parser_texte_liste(conducteurs, cls_role="secteur")
+        }
+
+        with st.spinner("Génération du PowerPoint en cours..."):
+            fichier_pptx = generer_presentation(donnees)
+            
+            with open(fichier_pptx, "rb") as f:
+                st.download_button(
+                    label="📥 Télécharger le fichier .pptx",
+                    data=f,
+                    file_name="Organigramme_Chantier.pptx",
+                    mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                )
