@@ -11,8 +11,18 @@ from pptx.enum.shapes import MSO_SHAPE
 # CONFIGURATION DE LA PAGE WEB
 # ============================================================
 st.set_page_config(page_title="Générateur Organigramme PPTX", layout="wide")
-st.title("🏗️ Générateur d'Organigramme de Chantier")
 
+# Affichage du Logo Lg et du Titre en rouge
+col_logo, col_titre = st.columns([1, 11])
+with col_logo:
+    if os.path.exists("Lg.png"):
+        st.image("Lg.png", width=70)
+with col_titre:
+    st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'>🏗️ Générateur d'Organigramme Léon Grosse Grand Projet </h1>", unsafe_allow_html=True)
+
+# ============================================================
+# COULEURS CHARTE GRAPHIQUE
+# ============================================================
 # ============================================================
 # COULEURS CHARTE GRAPHIQUE
 # ============================================================
