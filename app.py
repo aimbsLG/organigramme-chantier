@@ -567,7 +567,7 @@ with col1:
 
 with col2:
     st.header("⚙️ Génération PPTX")
-    st.info("Le fichier sera généré avec des cases vides prêtes à recevoir vos logos directement dans PowerPoint.")
+    
     
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
