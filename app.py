@@ -436,18 +436,19 @@ def generer_presentation(donnees):
     cadre_moe.fill.fore_color.rgb = COLOR_WHITE
     cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
     cadre_moe.shadow.inherit = False
-    tf_cadre = cadre_moe.text_frame
-    p_cadre = tf_cadre.paragraphs[0]
-    p_cadre.text = "Équipe détaillée en Phase Conception"
-    p_cadre.font.name = "Poppins"
-    p_cadre.font.size = Pt(10)
-    p_cadre.font.color.rgb = COLOR_TEXT_DARK
-    p_cadre.alignment = PP_ALIGN.CENTER
+    
+    # LA LIGNE DE TEXTE A ETE SUPPRIMEE ICI
 
-    # CORRECTION : Génération d'un carré gris par membre enregistré dans la MOE
-    entreprises_moe = donnees.get("moe", [])
+    entreprises_moe = []
+    for m in donnees.get("moe", []):
+        role_complet = m.get("role", "")
+        if " (" in role_complet:
+            ent = role_complet.split(" (")[1].replace(")", "").strip()
+            if ent and ent not in entreprises_moe:
+                entreprises_moe.append(ent)
+                
     if not entreprises_moe:
-        entreprises_moe = ["MOE Placeholder"]
+        entreprises_moe = ["MOE 1"]
 
     nb_entreprises = len(entreprises_moe)
     nb_rows = (nb_entreprises + 1) // 2
@@ -462,7 +463,7 @@ def generer_presentation(donnees):
     hauteur_cadre_moe = (marge_interne_y * 2) + (nb_rows * hauteur_zone) + ((nb_rows - 1) * espace_y if nb_rows > 1 else 0)
     cadre_moe.height = hauteur_cadre_moe
 
-    for idx, ent in enumerate(entreprises_moe):
+    for idx, nom_ent in enumerate(entreprises_moe):
         if idx >= 8: break
         col_idx = idx % 2
         row_idx = idx // 2
