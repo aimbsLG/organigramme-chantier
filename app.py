@@ -117,7 +117,6 @@ def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fon
                 break
 
         if chemin_logo:
-            # On applique la même marge (0.30) à tous les logos, même le "Machine"
             taille_logo = Inches(0.30)
             x_logo = x + (diametre - taille_logo) / 2
             y_logo = y_rond + (diametre - taille_logo) / 2
@@ -336,8 +335,9 @@ def generer_presentation(donnees):
         ajouter_zone_image_cliquable(slide1, Inches(3.20) + (Inches(2.40)/2) - (Inches(1.35)/2), Inches(2.05), Inches(1.35), Inches(0.75))
 
     # DIRECTION DE PROJET
-    ajouter_titre_section_pptx(slide1, "DIRECTION DE PROJET", CENTRE_PAGE - Inches(1.2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    ajouter_fiche_personne_pptx(slide1, donnees["direction"]["poste"], donnees["direction"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
+    if donnees["direction"]["nom"]:
+        ajouter_titre_section_pptx(slide1, "DIRECTION DE PROJET", CENTRE_PAGE - Inches(1.2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        ajouter_fiche_personne_pptx(slide1, donnees["direction"]["poste"], donnees["direction"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
     # COPIL
     ajouter_titre_section_pptx(slide1, "COMITÉ DE PILOTAGE", Inches(11.85), Inches(0.15), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
@@ -420,18 +420,25 @@ def generer_presentation(donnees):
         if i < len(coords_copil):
             ajouter_fiche_personne_pptx(slide2, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
 
-    # DIRECTEUR CHANTIER S2 
-    ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    ajouter_fiche_personne_pptx(slide2, "Dir. Chantier", donnees["directeur_chantier"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
+    # DIRECTEUR CHANTIER S2
+    if donnees["directeur_chantier"]:
+        ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        ajouter_fiche_personne_pptx(slide2, "Dir. Chantier", donnees["directeur_chantier"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
-    # ============================================================
-    # CORRECTION : RESTAURATION DES CASES GRISES MOE SUR SLIDE 2
-    # ============================================================
-    x_moe_s2 = Inches(0.40)
-    y_moe_s2 = Inches(3.25)
-    largeur_bloc_moe = Inches(3.20)
-    ajouter_titre_section_pptx(slide2, "Pôle MOE", x_moe_s2, y_moe_s2, largeur_bloc_moe, Inches(0.45), COLOR_SAND, COLOR_GREEN)
-    y_cadre_moe = y_moe_s2 + Inches(0.45) + Inches(0.15)
+    # MOE SIMPLIFIEE S2
+    ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
+    cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
+    cadre_moe.fill.solid()
+    cadre_moe.fill.fore_color.rgb = COLOR_WHITE
+    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
+    cadre_moe.shadow.inherit = False
+    tf_cadre = cadre_moe.text_frame
+    p_cadre = tf_cadre.paragraphs[0]
+    p_cadre.text = "Équipe détaillée en Phase Conception"
+    p_cadre.font.name = "Poppins"
+    p_cadre.font.size = Pt(10)
+    p_cadre.font.color.rgb = COLOR_TEXT_DARK
+    p_cadre.alignment = PP_ALIGN.CENTER
 
     entreprises_moe = []
     for m in donnees.get("moe", []):
@@ -455,20 +462,14 @@ def generer_presentation(donnees):
     espace_y = Inches(0.12)
 
     hauteur_cadre_moe = (marge_interne_y * 2) + (nb_rows * hauteur_zone) + ((nb_rows - 1) * espace_y if nb_rows > 1 else 0)
-
-    cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x_moe_s2, y_cadre_moe, largeur_bloc_moe, hauteur_cadre_moe)
-    cadre_moe.fill.solid()
-    cadre_moe.fill.fore_color.rgb = COLOR_WHITE
-    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
-    cadre_moe.shadow.inherit = False
+    cadre_moe.height = hauteur_cadre_moe
 
     for idx, nom_ent in enumerate(entreprises_moe):
         if idx >= 8: break
         col_idx = idx % 2
         row_idx = idx // 2
-        x_logo = x_moe_s2 + marge_interne_x + col_idx * (largeur_zone + espace_x)
-        y_logo = y_cadre_moe + marge_interne_y + row_idx * (hauteur_zone + espace_y)
-        # Ceci génère la zone cliquable grise (placeholder)
+        x_logo = Inches(0.40) + marge_interne_x + col_idx * (largeur_zone + espace_x)
+        y_logo = Inches(3.85) + marge_interne_y + row_idx * (hauteur_zone + espace_y)
         ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone)
 
     # CONDUCTEURS TRAVAUX S2
@@ -509,52 +510,52 @@ with col1:
     st.header("📋 Informations du chantier")
     
     st.subheader("Informations générales")
-    moa = st.text_input("Maître d'Ouvrage (MOA)", "Finances Publiques")
-    dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "Alexandre MARTIN")
-    co_traitant = st.text_input("Co-traitant", "Eiffage Construction")
+    moa = st.text_input("Maître d'Ouvrage (MOA)", "")
+    dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "")
+    co_traitant = st.text_input("Co-traitant", "")
     
     st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
-        {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
-        {"Nom": "Jean-Stéphane DIDIER", "Poste": "DGA"},
-        {"Nom": "Charlotte VIGUIER", "Poste": "Dir. Grands Projets"},
-        {"Nom": "Micaël GONCALVES", "Poste": "Dir. Excellence"}
+        {"Nom": "", "Poste": "Directeur National"},
+        {"Nom": "", "Poste": "DGA"},
+        {"Nom": "", "Poste": "Dir. Grands Projets"},
+        {"Nom": "", "Poste": "Dir. Excellence"}
     ])
     ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
     
     st.subheader("Pôle MOE")
     df_moe = pd.DataFrame([
-        {"Nom": "Sophie VALENTIN", "Rôle / Entreprise": "Architecte (RDA Architecture)"},
-        {"Nom": "Pierre DUBOIS", "Rôle / Entreprise": "BE (BET Structure)"}
+        {"Nom": "", "Rôle / Entreprise": "Architecte ()"},
+        {"Nom": "", "Rôle / Entreprise": "BE ()"}
     ])
     ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
     
     st.subheader("Pôle Support")
     df_support = pd.DataFrame([
-        {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
-        {"Nom": "Jérôme TRANCHANT", "Poste": "QSE Sécurité"},
-        {"Nom": "Jérôme JUNIQUE", "Poste": "Chef de service Méthode"}
+        {"Nom": "", "Poste": "Réf. Bas Carbone"},
+        {"Nom": "", "Poste": "QSE Sécurité"},
+        {"Nom": "", "Poste": "Chef de service Méthode"}
     ])
     ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
     
     st.subheader("Mainteneur")
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        maint_contact = st.text_input("Contact", "Thomas ROUSSEL")
+        maint_contact = st.text_input("Contact", "")
     with col_m2:
-        maint_ent = st.text_input("Entreprise", "Dalkia")
+        maint_ent = st.text_input("Entreprise", "")
     
     st.markdown("---")
     st.subheader("Uniquement Phase Réalisation")
-    dir_chantier = st.text_input("Directeur de Chantier", "Marc DURAND")
+    dir_chantier = st.text_input("Directeur de Chantier", "")
     type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"], horizontal=True)
     
-    val_secteur = "Bâtiment A" if type_orga == "Zones" else "GO"
-    val_secteur_2 = "Infrastructures" if type_orga == "Zones" else "CE Archi"
+    val_secteur = "Zone 1" if type_orga == "Zones" else "GO"
+    val_secteur_2 = "Zone 2" if type_orga == "Zones" else "CE Archi"
     
     df_cond = pd.DataFrame([
-        {"Nom": "Julien FAURE", "Secteur": val_secteur},
-        {"Nom": "Élodie MICHEL", "Secteur": val_secteur_2}
+        {"Nom": "", "Secteur": val_secteur},
+        {"Nom": "", "Secteur": val_secteur_2}
     ])
     ed_cond = st.data_editor(df_cond, num_rows="dynamic", use_container_width=True, hide_index=True)
 
@@ -563,7 +564,6 @@ with col2:
     st.info("Le fichier sera généré avec des cases vides prêtes à recevoir vos logos directement dans PowerPoint.")
     
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
-        # Extraction propre des données depuis les tableaux
         donnees = {
             "moa": moa,
             "direction": {"nom": dir_projet, "poste": "Directeur de Projet"},
