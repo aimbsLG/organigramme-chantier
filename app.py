@@ -517,7 +517,7 @@ with col1:
     st.subheader("Informations générales")
     moa = st.text_input("Maître d'Ouvrage (MOA)", "")
     dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "")
-    co_traitant = st.text_input("Co-traitant", "")
+    co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
     
     st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
@@ -543,7 +543,7 @@ with col1:
     ])
     ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
     
-    st.subheader("Mainteneur")
+    st.subheader("Mainteneur (laisser vide le cas échéant)")
     presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
     
     maint_contact = ""
@@ -580,9 +580,9 @@ with col2:
             "direction": {"nom": dir_projet, "poste": "Directeur de Projet"},
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": row["Nom"], "role": row["Rôle / Entreprise"]} for _, row in ed_moe.iterrows() if str(row["Nom"]).strip()],
-            "co_traitant (laisser vide le cas échéant)": co_traitant,
+            "co_traitant": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
-            "mainteneur (laisser vide le cas échéant)": {"contact": maint_contact, "entreprise": maint_ent},
+            "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
             "directeur_chantier": dir_chantier,
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
