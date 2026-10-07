@@ -57,7 +57,7 @@ def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fon
     rectangle.fill.solid()
     rectangle.fill.fore_color.rgb = couleur_fond
     rectangle.line.fill.background()
-    rectangle.shadow.inherit = False  # <-- CORRECTION OMBRE
+    rectangle.shadow.inherit = False
 
     tf = rectangle.text_frame
     tf.word_wrap = True
@@ -68,7 +68,7 @@ def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fon
 
     p = tf.paragraphs[0]
     p.text = texte
-    p.font.name = "Poppins"  # <-- CORRECTION POLICE
+    p.font.name = "Poppins"
     p.font.color.rgb = couleur_texte
     p.font.size = Pt(11)
     p.font.bold = True
@@ -132,7 +132,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     card.fill.fore_color.rgb = COLOR_SAND
     card.line.color.rgb = COLOR_SAND
     card.line.width = Pt(0.5)
-    card.shadow.inherit = False  # <-- CORRECTION OMBRE SUPERPOSÉE
+    card.shadow.inherit = False
 
     red_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left - Inches(0.01), top, width + Inches(0.02), Inches(0.13))
     red_bar.adjustments[0] = 0.25
@@ -148,7 +148,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
 
     p_role = tf.paragraphs[0]
     p_role.text = role
-    p_role.font.name = "Poppins"  # <-- CORRECTION POLICE
+    p_role.font.name = "Poppins"
     p_role.font.size = Pt(8)
     p_role.font.bold = True
     p_role.font.color.rgb = COLOR_TEXT_DARK
@@ -156,7 +156,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
 
     p_name = tf.add_paragraph()
     p_name.text = name
-    p_name.font.name = "Poppins"  # <-- CORRECTION POLICE
+    p_name.font.name = "Poppins"
     p_name.font.size = Pt(7.5)
     p_name.font.color.rgb = COLOR_TEXT_DARK
     p_name.alignment = PP_ALIGN.CENTER
@@ -338,7 +338,7 @@ def generer_presentation(donnees):
         ajouter_titre_section_pptx(slide1, "CO-TRAITANT", Inches(3.20), Inches(1.45), Inches(2.40), Inches(0.45), COLOR_SAND, COLOR_BLUE)
         ajouter_zone_image_cliquable(slide1, Inches(3.20) + (Inches(2.40)/2) - (Inches(1.35)/2), Inches(2.05), Inches(1.35), Inches(0.75))
 
-    # DIRECTION
+    # DIRECTION DE PROJET
     ajouter_titre_section_pptx(slide1, "DIRECTION DE PROJET", CENTRE_PAGE - Inches(1.2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
     ajouter_fiche_personne_pptx(slide1, donnees["direction"]["poste"], donnees["direction"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
@@ -423,15 +423,11 @@ def generer_presentation(donnees):
         if i < len(coords_copil):
             ajouter_fiche_personne_pptx(slide2, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
 
-    # DIRECTION DE PROJET S2
-    ajouter_titre_section_pptx(slide2, "DIRECTION DE PROJET", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    ajouter_fiche_personne_pptx(slide2, "Directeur de projet", donnees["direction"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
+    # DIRECTEUR CHANTIER S2 (Remonte à 1.45 po - Prend la place de la Direction de Projet)
+    ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+    ajouter_fiche_personne_pptx(slide2, "Dir. Chantier", donnees["directeur_chantier"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
-    # DIRECTEUR CHANTIER
-    ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(3.85), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    ajouter_fiche_personne_pptx(slide2, "Dir. Chantier", donnees["directeur_chantier"], CENTRE_PAGE - (fiche_w/2), Inches(4.96), fiche_w, fiche_h)
-
-    # MOE SIMPLIFIEE
+    # MOE SIMPLIFIEE S2
     ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
     cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
     cadre_moe.fill.solid()
@@ -446,7 +442,7 @@ def generer_presentation(donnees):
     p_cadre.font.color.rgb = COLOR_TEXT_DARK
     p_cadre.alignment = PP_ALIGN.CENTER
 
-    # CONDUCTEURS TRAVAUX
+    # CONDUCTEURS TRAVAUX S2 (Reste bien centré à 3.85 po)
     conducteurs = donnees.get("conducteurs_travaux", [])[:3]
     if len(conducteurs) > 0:
         largeur_bloc = Inches(3.00)
@@ -519,7 +515,6 @@ with col1:
     st.subheader("Uniquement Phase Réalisation")
     dir_chantier = st.text_input("Directeur de Chantier", "Marc DURAND")
     
-    # <-- CORRECTION : RETOUR DU CHOIX D'ORGANISATION
     type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"])
     
     if type_orga == "Zones":
@@ -545,7 +540,7 @@ with col2:
             "services_internes": parser_texte_liste(support),
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
             "directeur_chantier": dir_chantier,
-            "structure_type": type_orga, # <-- Ajout du choix à l'export
+            "structure_type": type_orga, 
             "conducteurs_travaux": parser_texte_liste(conducteurs, cls_role="secteur")
         }
 
