@@ -436,19 +436,16 @@ def generer_presentation(donnees):
     cadre_moe.fill.fore_color.rgb = COLOR_WHITE
     cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
     cadre_moe.shadow.inherit = False
-    
-    # LA LIGNE DE TEXTE A ETE SUPPRIMEE ICI
 
+    # CORRECTION : Un carré gris par membre MOE ajouté dans le tableau, sans conditions de parenthèses
     entreprises_moe = []
     for m in donnees.get("moe", []):
-        role_complet = m.get("role", "")
-        if " (" in role_complet:
-            ent = role_complet.split(" (")[1].replace(")", "").strip()
-            if ent and ent not in entreprises_moe:
-                entreprises_moe.append(ent)
-                
+        ent = m.get("role", "").strip()
+        if ent and ent not in entreprises_moe:
+            entreprises_moe.append(ent)
+            
     if not entreprises_moe:
-        entreprises_moe = ["MOE 1"]
+        entreprises_moe = ["MOE Placeholder"]
 
     nb_entreprises = len(entreprises_moe)
     nb_rows = (nb_entreprises + 1) // 2
@@ -568,7 +565,7 @@ with col1:
 
 with col2:
     st.header("⚙️ Génération PPTX")
-    
+   
     
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
