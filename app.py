@@ -340,18 +340,20 @@ def generer_presentation(donnees):
         ajouter_fiche_personne_pptx(slide1, donnees["direction"]["poste"], donnees["direction"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
     # COPIL
-    ajouter_titre_section_pptx(slide1, "COMITÉ DE PILOTAGE", Inches(11.85), Inches(0.15), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    coords_copil = [(Inches(11.65), Inches(1.23)), (Inches(13.15), Inches(1.23)), (Inches(11.65), Inches(2.68)), (Inches(13.15), Inches(2.68))]
-    for i, membre in enumerate(donnees["copil"]):
-        if i < len(coords_copil):
-            ajouter_fiche_personne_pptx(slide1, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
+    if donnees["copil"]:
+        ajouter_titre_section_pptx(slide1, "COMITÉ DE PILOTAGE", Inches(11.85), Inches(0.15), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        coords_copil = [(Inches(11.65), Inches(1.23)), (Inches(13.15), Inches(1.23)), (Inches(11.65), Inches(2.68)), (Inches(13.15), Inches(2.68))]
+        for i, membre in enumerate(donnees["copil"]):
+            if i < len(coords_copil):
+                ajouter_fiche_personne_pptx(slide1, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
 
     # MOE
-    ajouter_titre_section_pptx(slide1, "Maîtrise d'oeuvre", Inches(1.295), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_GREEN)
-    for idx, moe in enumerate(donnees["moe"]):
-        x = Inches(0.50) + (idx % 3) * Inches(1.75)
-        y = y_fiches_moe + (idx // 3) * Inches(1.45)
-        ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h)
+    if donnees["moe"]:
+        ajouter_titre_section_pptx(slide1, "Maîtrise d'oeuvre", Inches(1.295), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_GREEN)
+        for idx, moe in enumerate(donnees["moe"]):
+            x = Inches(0.50) + (idx % 3) * Inches(1.75)
+            y = y_fiches_moe + (idx // 3) * Inches(1.45)
+            ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h)
 
     # MAINTENEUR
     if donnees["mainteneur"]["entreprise"] and donnees["mainteneur"]["entreprise"] != "Aucun":
@@ -359,11 +361,12 @@ def generer_presentation(donnees):
         ajouter_fiche_personne_gris_pptx(slide1, donnees["mainteneur"]["entreprise"], donnees["mainteneur"]["contact"], CENTRE_PAGE - (fiche_w/2), Inches(4.93), fiche_w, fiche_h)
 
     # SUPPORT
-    ajouter_titre_section_pptx(slide1, "POLE SUPPORT", Inches(9.88), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    coords_services = [(Inches(9.58), Inches(4.93)), (Inches(11.18), Inches(4.93)), (Inches(10.38), Inches(6.38))]
-    for idx, service in enumerate(donnees["services_internes"]):
-        if idx < len(coords_services):
-            ajouter_fiche_personne_pptx(slide1, service["poste"], service["nom"], coords_services[idx][0], coords_services[idx][1], fiche_w, fiche_h)
+    if donnees["services_internes"]:
+        ajouter_titre_section_pptx(slide1, "POLE SUPPORT", Inches(9.88), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        coords_services = [(Inches(9.58), Inches(4.93)), (Inches(11.18), Inches(4.93)), (Inches(10.38), Inches(6.38))]
+        for idx, service in enumerate(donnees["services_internes"]):
+            if idx < len(coords_services):
+                ajouter_fiche_personne_pptx(slide1, service["poste"], service["nom"], coords_services[idx][0], coords_services[idx][1], fiche_w, fiche_h)
 
     # --- SLIDE 2 : REALISATION ---
     slide2 = prs.slides.add_slide(blank_layout)
@@ -415,10 +418,11 @@ def generer_presentation(donnees):
     p_m2_2.alignment = PP_ALIGN.CENTER
 
     # COPIL S2
-    ajouter_titre_section_pptx(slide2, "COMITÉ DE PILOTAGE", Inches(11.85), Inches(0.15), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    for i, membre in enumerate(donnees["copil"]):
-        if i < len(coords_copil):
-            ajouter_fiche_personne_pptx(slide2, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
+    if donnees["copil"]:
+        ajouter_titre_section_pptx(slide2, "COMITÉ DE PILOTAGE", Inches(11.85), Inches(0.15), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        for i, membre in enumerate(donnees["copil"]):
+            if i < len(coords_copil):
+                ajouter_fiche_personne_pptx(slide2, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
 
     # DIRECTEUR CHANTIER S2
     if donnees["directeur_chantier"]:
@@ -489,12 +493,13 @@ def generer_presentation(donnees):
             ajouter_fiche_personne_pptx(slide2, "CTX Principal", cond["nom"], x_colonne + (largeur_bloc / 2) - (fiche_w / 2), Inches(4.96), fiche_w, fiche_h)
 
     # POLE SUPPORT S2
-    ajouter_titre_section_pptx(slide2, "POLE SUPPORT", CENTRE_PAGE - (Inches(2.4) / 2), Inches(6.20), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-    x_origine_s2 = Inches(5.44)
-    coords_support_s2 = [x_origine_s2, x_origine_s2 + Inches(1.60), x_origine_s2 + Inches(3.20)]
-    for idx, service in enumerate(donnees["services_internes"]):
-        if idx < len(coords_support_s2):
-            ajouter_fiche_personne_pptx(slide2, service["poste"], service["nom"], coords_support_s2[idx], Inches(7.28), fiche_w, fiche_h)
+    if donnees["services_internes"]:
+        ajouter_titre_section_pptx(slide2, "POLE SUPPORT", CENTRE_PAGE - (Inches(2.4) / 2), Inches(6.20), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
+        x_origine_s2 = Inches(5.44)
+        coords_support_s2 = [x_origine_s2, x_origine_s2 + Inches(1.60), x_origine_s2 + Inches(3.20)]
+        for idx, service in enumerate(donnees["services_internes"]):
+            if idx < len(coords_support_s2):
+                ajouter_fiche_personne_pptx(slide2, service["poste"], service["nom"], coords_support_s2[idx], Inches(7.28), fiche_w, fiche_h)
 
     path_final = "organigramme_final.pptx"
     prs.save(path_final)
@@ -516,10 +521,10 @@ with col1:
     
     st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
-        {"Nom": "", "Poste": "Directeur National"},
-        {"Nom": "", "Poste": "DGA"},
-        {"Nom": "", "Poste": "Dir. Grands Projets"},
-        {"Nom": "", "Poste": "Dir. Excellence"}
+        {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
+        {"Nom": "Jean-Stéphane DIDIER", "Poste": "DGA"},
+        {"Nom": "Charlotte VIGUIER", "Poste": "Dir. Grands Projets"},
+        {"Nom": "Micaël GONCALVES", "Poste": "Dir. Excellence"}
     ])
     ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
     
@@ -532,18 +537,24 @@ with col1:
     
     st.subheader("Pôle Support")
     df_support = pd.DataFrame([
-        {"Nom": "", "Poste": "Réf. Bas Carbone"},
-        {"Nom": "", "Poste": "QSE Sécurité"},
-        {"Nom": "", "Poste": "Chef de service Méthode"}
+        {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
+        {"Nom": "Jérôme TRANCHANT", "Poste": "QSE Sécurité"},
+        {"Nom": "Jérôme JUNIQUE", "Poste": "Chef de service Méthode"}
     ])
     ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
     
     st.subheader("Mainteneur")
-    col_m1, col_m2 = st.columns(2)
-    with col_m1:
-        maint_contact = st.text_input("Contact", "")
-    with col_m2:
-        maint_ent = st.text_input("Entreprise", "")
+    presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
+    
+    maint_contact = ""
+    maint_ent = ""
+    
+    if presence_mainteneur:
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            maint_ent = st.text_input("Entreprise", "")
+        with col_m2:
+            maint_contact = st.text_input("Contact", "")
     
     st.markdown("---")
     st.subheader("Uniquement Phase Réalisation")
@@ -561,7 +572,7 @@ with col1:
 
 with col2:
     st.header("⚙️ Génération PPTX")
-    st.info("Le fichier sera généré avec des cases vides prêtes à recevoir vos logos directement dans PowerPoint.")
+
     
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
@@ -569,9 +580,9 @@ with col2:
             "direction": {"nom": dir_projet, "poste": "Directeur de Projet"},
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": row["Nom"], "role": row["Rôle / Entreprise"]} for _, row in ed_moe.iterrows() if str(row["Nom"]).strip()],
-            "co_traitant": co_traitant,
+            "co_traitant (laisser vide le cas échéant)": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
-            "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
+            "mainteneur (laisser vide le cas échéant)": {"contact": maint_contact, "entreprise": maint_ent},
             "directeur_chantier": dir_chantier,
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
