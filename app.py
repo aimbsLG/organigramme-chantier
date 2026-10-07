@@ -18,7 +18,7 @@ with col_logo:
     if os.path.exists("Lg.png"):
         st.image("Lg.png", width=70)
 with col_titre:
-    st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'>🏗️ Générateur d'Organigramme Léon Grosse Grand Projet </h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'> Générateur d'Organigramme Léon Grosse Grand Projet </h1>", unsafe_allow_html=True)
 
 # ============================================================
 # COULEURS CHARTE GRAPHIQUE
