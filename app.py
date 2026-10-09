@@ -598,23 +598,30 @@ with col1:
         liste_moe = []
         roles_par_defaut = {0: "Architecte", 1: "BE Structure", 2: "BE Fluides"}
         
+# Génération dynamique des lignes en fonction du curseur
         for i in range(nb_membres_moe):
             st.markdown(f"**Membre {i+1}**")
             c_input, c_file = st.columns([2.5, 1.5])
             
             with c_input:
                 def_role = roles_par_defaut.get(i, "")
-                role_moe = st.text_input(f"Rôle / Entreprise (Membre {i+1})", value=def_role, key=f"role_moe_{i}", label_visibility="collapsed")
-                nom_moe = st.text_input(f"(Entreprise {i+1})", value="", key=f"nom_moe_{i}", placeholder="Prénom Nom")
+                
+                # 3 champs bien séparés pour plus de clarté
+                ent_moe = st.text_input("Entreprise", key=f"ent_moe_{i}", placeholder="Ex: Léon Grosse")
+                role_moe = st.text_input("Rôle", value=def_role, key=f"role_moe_{i}", placeholder="Ex: Architecte")
+                nom_moe = st.text_input("Contact", value="", key=f"nom_moe_{i}", placeholder="Ex: Maud CAUBET")
             
             with c_file:
-                img_moe = st.file_uploader(f"Logo / Photo (Membre {i+1})", type=["png", "jpg", "jpeg"], key=f"img_moe_{i}", label_visibility="collapsed")
+                # Ajout du logo
+                img_moe = st.file_uploader("Logo de l'entreprise", type=["png", "jpg", "jpeg"], key=f"img_moe_{i}")
             
-            liste_moe.append({"nom": nom_moe, "role": role_moe, "image": img_moe})
+            # On fusionne le rôle et l'entreprise pour correspondre au format attendu par le PowerPoint
+            role_final = f"{role_moe} ({ent_moe})" if ent_moe.strip() != "" else role_moe
+            
+            liste_moe.append({"nom": nom_moe, "role": role_final, "image": img_moe})
             
             if i < nb_membres_moe - 1:
                 st.markdown("---")
-
         st.subheader("Pôle Support")
         df_support = pd.DataFrame([
             {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
