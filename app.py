@@ -530,7 +530,12 @@ with col1:
     
     st.subheader("Informations générales")
     moa = st.text_input("Maître d'Ouvrage (MOA)", "")
-    dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "")
+    col_titre_dir, col_nom_dir = st.columns([1, 2])
+    with col_titre_dir:
+        titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
+    with col_nom_dir:
+        dir_projet = st.text_input("Prénom Nom", "")
+    
     co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
     
     st.subheader("Comité de Pilotage")
