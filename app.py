@@ -185,7 +185,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     # On active zoomer_photo=True pour ces fiches
     ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo, zoomer_photo=True)
 
-def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, height):
+def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, height, image_upload=None):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
     card.fill.solid()
     card.fill.fore_color.rgb = COLOR_SAND
@@ -233,11 +233,18 @@ def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, heigh
     p_name.font.color.rgb = COLOR_TEXT_DARK
     p_name.alignment = PP_ALIGN.CENTER
 
+    # --- AFFICHAGE DU LOGO RECTANGULAIRE AU-DESSUS ---
     largeur_img = Inches(1.20)
     hauteur_img = Inches(0.50)
     x_img = left + (width / 2) - (largeur_img / 2)
     y_img = top - hauteur_img
-    ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img)
+    
+    # Si l'utilisateur a mis un logo sur le site, on l'affiche. Sinon, rectangle vide par défaut.
+    if image_upload is not None:
+        ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img, chemin_placeholder=image_upload)
+    else:
+        ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img)
+
 
 def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
@@ -376,7 +383,8 @@ def generer_presentation(donnees):
         for idx, moe in enumerate(donnees["moe"]):
             x = Inches(0.50) + (idx % 3) * Inches(1.75)
             y = y_fiches_moe + (idx // 3) * Inches(1.45)
-            ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h)
+            # Transmission du fichier image au rectangle au-dessus de la fiche verte
+            ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h, image_upload=moe.get("image_upload"))
 
     # MAINTENEUR
     if donnees["mainteneur"]["entreprise"] and donnees["mainteneur"]["entreprise"] != "Aucun":
@@ -455,12 +463,18 @@ def generer_presentation(donnees):
 
 
     # MOE SIMPLIFIEE S2
-    ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
-    cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
-    cadre_moe.fill.solid()
-    cadre_moe.fill.fore_color.rgb = COLOR_WHITE
-    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
-    cadre_moe.shadow.inherit = False
+    for idx, moe in enumerate(donnees.get("moe", [])):
+        if idx >= 8: break
+        col_idx = idx % 2
+        row_idx = idx // 2
+        x_logo = Inches(0.40) + marge_interne_x + col_idx * (largeur_zone + espace_x)
+        y_logo = Inches(3.85) + marge_interne_y + row_idx * (hauteur_zone + espace_y)
+        
+        # Le même logo s'affiche automatiquement ici aussi sur la Slide 2 !
+        if moe.get("image_upload") is not None:
+            ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone, chemin_placeholder=moe["image_upload"])
+        else:
+            ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone)
 
     entreprises_moe = []
     for m in donnees.get("moe", []):
