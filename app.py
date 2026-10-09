@@ -33,7 +33,7 @@ COLOR_BLUE      = RGBColor(85, 198, 221)
 # ============================================================
 # FONCTIONS DE DESSIN
 # ============================================================
-def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemin_placeholder="placeholder_rond.png", zoomer_photo=False):
+def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemin_placeholder="placeholder_rond.png"):
     if not os.path.exists(chemin_placeholder):
         from PIL import Image, ImageDraw
         img = Image.new("RGB", (400, 400), "#FFFFFF")
@@ -43,27 +43,45 @@ def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemi
     
     zone_ronde = slide.shapes.add_picture(chemin_placeholder, x, y, width=diametre, height=diametre)
     zone_ronde.auto_shape_type = MSO_SHAPE.OVAL
-    
-    # --- ZOOM POUR CACHER LES BORDS ---
-    if zoomer_photo and chemin_placeholder != "placeholder_rond.png":
-        zone_ronde.crop_left = 0.12
-        zone_ronde.crop_right = 0.12
-        zone_ronde.crop_top = 0.12
-        zone_ronde.crop_bottom = 0.12
-        
     return zone_ronde
 
 def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placeholder="placeholder_temp.png"):
-    # 1. Si c'est un fichier directement uploadé depuis Streamlit (objet en mémoire)
+    from PIL import Image, ImageDraw
+    
+    # 1. Si c'est un fichier directement uploadé depuis Streamlit
     if hasattr(chemin_placeholder, 'read'):
-        chemin_placeholder.seek(0) # Réinitialise la lecture pour pouvoir l'insérer sur la Slide 1 puis la Slide 2
-        return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
-        
-    # 2. Comportement classique : si c'est un nom de fichier introuvable ou invalide, on crée le rectangle gris
+        chemin_placeholder.seek(0)
+        try:
+            # On crée une toile blanche avec une bordure grise (la fameuse case)
+            img_base = Image.new("RGB", (300, 200), "#FFFFFF")
+            draw = ImageDraw.Draw(img_base)
+            draw.rectangle([(0, 0), (299, 199)], outline="#D2D2D2", width=2)
+            
+            # On ouvre le logo de l'utilisateur
+            img_logo = Image.open(chemin_placeholder).convert("RGBA")
+            # On réduit le logo pour qu'il garde ses proportions et rentre avec des marges (260x160)
+            img_logo.thumbnail((260, 160), Image.Resampling.LANCZOS)
+            
+            # On calcule la position pour le centrer parfaitement dans la case
+            paste_x = (300 - img_logo.width) // 2
+            paste_y = (200 - img_logo.height) // 2
+            
+            # On colle le logo au centre de la case
+            img_base.paste(img_logo, (paste_x, paste_y), img_logo)
+            
+            temp_logo_path = "temp_logo_upload.png"
+            img_base.save(temp_logo_path)
+            
+            return slide.shapes.add_picture(temp_logo_path, x, y, width=largeur, height=hauteur)
+        except Exception as e:
+            # Sécurité en cas d'erreur de lecture
+            chemin_placeholder.seek(0)
+            return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
+            
+    # 2. Comportement classique pour générer les cases vides
     if not isinstance(chemin_placeholder, str) or not os.path.exists(chemin_placeholder):
         nom_sauvegarde = "placeholder_temp.png"
         if not os.path.exists(nom_sauvegarde):
-            from PIL import Image, ImageDraw
             img = Image.new("RGB", (300, 200), "#F8F8F8")
             draw = ImageDraw.Draw(img)
             draw.rectangle([(0, 0), (299, 199)], outline="#D2D2D2", width=2)
@@ -185,7 +203,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     y_rond = top - (diametre_rond) + Inches(0.13)
     
     # --- DETECTION AUTOMATIQUE DE LA PHOTO ---
-    chemin_photo = "placeholder_rond.png" # Photo vide par défaut
+    chemin_photo = "placeholder_rond.png"
     
     if name.strip() != "":
         extensions = [".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"]
@@ -195,8 +213,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
                 chemin_photo = nom_fichier
                 break
                 
-    # On active zoomer_photo=True pour ces fiches
-    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo, zoomer_photo=True)
+    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo)
 
 def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, height, image_upload=None):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
@@ -246,13 +263,11 @@ def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, heigh
     p_name.font.color.rgb = COLOR_TEXT_DARK
     p_name.alignment = PP_ALIGN.CENTER
 
-    # --- AFFICHAGE DU LOGO RECTANGULAIRE AU-DESSUS ---
     largeur_img = Inches(1.20)
     hauteur_img = Inches(0.50)
     x_img = left + (width / 2) - (largeur_img / 2)
     y_img = top - hauteur_img
     
-    # Si l'utilisateur a mis un logo sur le site, on l'affiche. Sinon, rectangle vide par défaut.
     if image_upload is not None:
         ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img, chemin_placeholder=image_upload)
     else:
@@ -396,7 +411,6 @@ def generer_presentation(donnees):
         for idx, moe in enumerate(donnees["moe"]):
             x = Inches(0.50) + (idx % 3) * Inches(1.75)
             y = y_fiches_moe + (idx // 3) * Inches(1.45)
-            # Transmission du fichier image au rectangle au-dessus de la fiche verte
             ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h, image_upload=moe.get("image_upload"))
 
     # MAINTENEUR
@@ -471,10 +485,9 @@ def generer_presentation(donnees):
     # DIRECTEUR CHANTIER S2
     if donnees["directeur_chantier"]["nom"]:
         ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-        # Le poste affichera désormais "Directeur de Chantier" ou "Directrice de Chantier" sans abréviation
         ajouter_fiche_personne_pptx(slide2, donnees["directeur_chantier"]["poste"], donnees["directeur_chantier"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
-    # MOE SIMPLIFIEE S2 (CORRIGÉ)
+    # MOE SIMPLIFIEE S2
     ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
     cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
     cadre_moe.fill.solid()
@@ -482,7 +495,6 @@ def generer_presentation(donnees):
     cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
     cadre_moe.shadow.inherit = False
 
-    # Redéfinition des dimensions indispensables pour éviter l'erreur UnboundLocalError
     largeur_zone = Inches(1.35)
     hauteur_zone = Inches(0.75)
     marge_interne_x = Inches(0.18)
@@ -495,7 +507,6 @@ def generer_presentation(donnees):
     hauteur_cadre_moe = (marge_interne_y * 2) + (nb_rows * hauteur_zone) + ((nb_rows - 1) * espace_y if nb_rows > 1 else 0)
     cadre_moe.height = hauteur_cadre_moe
 
-    # Boucle de dessin des logos rectangulaires avec l'image chargée depuis le site
     for idx, moe in enumerate(donnees.get("moe", [])):
         if idx >= 8: break
         col_idx = idx % 2
@@ -546,13 +557,11 @@ col1, col2 = st.columns([1.5, 1])
 with col1:
     st.header("📋 Informations du chantier")
     
-    # Création du conteneur avec scrollbar verticale (hauteur 620px)
     with st.container(height=620, border=False):
         
         st.subheader("Informations générales")
         moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         
-        # Menu déroulant pour le Directeur/Directrice de projet
         col_titre_dir, col_nom_dir = st.columns([1.5, 2.5])
         with col_titre_dir:
             titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
@@ -572,16 +581,10 @@ with col1:
        
         st.subheader("Pôle MOE")
         
-        # Curseur pour choisir dynamiquement le nombre de membres (de 1 à 9)
         nb_membres_moe = st.slider("Nombre de membres de la MOE", min_value=1, max_value=9, value=3)
-        
-        # Liste pour stocker dynamiquement les informations saisies
         liste_moe = []
-        
-        # Valeurs par défaut pratiques pour les premières lignes
         roles_par_defaut = {0: "Architecte", 1: "BE Structure", 2: "BE Fluides"}
         
-        # Génération dynamique des lignes en fonction du curseur
         for i in range(nb_membres_moe):
             st.markdown(f"**Membre {i+1}**")
             c_input, c_file = st.columns([2.5, 1.5])
@@ -623,7 +626,6 @@ with col1:
         st.markdown("---")
         st.subheader("Phase Réalisation")
         
-        # Menu déroulant pour le Directeur/Directrice de chantier
         col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
         with col_titre_ch:
             titre_chantier = st.selectbox("Titre ", ["Directeur de Chantier", "Directrice de Chantier"])
@@ -640,7 +642,6 @@ with col1:
             {"Nom": "", "Secteur": val_secteur_2}
         ])
         ed_cond = st.data_editor(df_cond, num_rows="dynamic", use_container_width=True, hide_index=True)
-
 
 with col2:
     st.header("⚙️ Génération PPTX")
