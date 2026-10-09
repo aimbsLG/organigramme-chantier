@@ -50,17 +50,14 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
     from PIL import Image, ImageDraw
     
     # Calcul dynamique de la taille de la case en pixels pour éviter la déformation
-    # 1 Inch = 914400 EMU. Cela garantit que l'image a exactement les mêmes proportions que la case PPTX !
     w_px = int(largeur / 914400 * 300)
     h_px = int(hauteur / 914400 * 300)
     
     if hasattr(chemin_placeholder, 'read'):
         chemin_placeholder.seek(0)
         try:
-            # Création de la toile blanche aux dimensions exactes
+            # Création de la toile blanche aux dimensions exactes (SANS BORDURE GRISE)
             img_base = Image.new("RGB", (w_px, h_px), "#FFFFFF")
-            draw = ImageDraw.Draw(img_base)
-            draw.rectangle([(0, 0), (w_px-1, h_px-1)], outline="#D2D2D2", width=3)
             
             # Ouverture du logo uploadé
             img_logo = Image.open(chemin_placeholder).convert("RGBA")
@@ -70,7 +67,7 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
             fond_blanc.paste(img_logo, (0, 0), img_logo)
             img_logo = fond_blanc.convert("RGB")
             
-            # MARGE DE SÉCURITÉ : On réduit le logo à 65% de l'espace pour ne pas combler la case
+            # MARGE DE SÉCURITÉ : On réduit le logo à 65% de l'espace
             max_w = int(w_px * 0.65)
             max_h = int(h_px * 0.65)
             img_logo.thumbnail((max_w, max_h), Image.Resampling.LANCZOS)
@@ -89,7 +86,7 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
             chemin_placeholder.seek(0)
             return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
             
-    # Comportement pour générer les cases vides
+    # Comportement pour générer les cases vides (on garde la bordure grise ici)
     if not isinstance(chemin_placeholder, str) or not os.path.exists(chemin_placeholder):
         img = Image.new("RGB", (w_px, h_px), "#F8F8F8")
         draw = ImageDraw.Draw(img)
@@ -99,7 +96,6 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
         return slide.shapes.add_picture(temp_empty_path, x, y, width=largeur, height=hauteur)
         
     return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
-
 def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fond, couleur_texte):
     diametre = Inches(0.45)
     x_rectangle = x + (diametre / 2)
