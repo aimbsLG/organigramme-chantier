@@ -532,6 +532,18 @@ with col1:
     
     # Création du conteneur avec scrollbar verticale (hauteur 620px)
     with st.container(height=620, border=False):
+        # Section dépliante pour charger les photos/logos depuis le PC
+        with st.expander("🖼️ Charger des photos ou logos depuis votre PC", expanded=False):
+            st.info("Sélectionnez vos fichiers ici. Ils seront automatiquement intégrés aux fiches correspondantes.")
+            
+            col_photo1, col_photo2 = st.columns(2)
+            with col_photo1:
+                photo_dir_projet = st.file_uploader("Photo Directeur/trice de Projet", type=["png", "jpg", "jpeg"])
+                photo_dir_chantier = st.file_uploader("Photo Directeur/trice de Chantier", type=["png", "jpg", "jpeg"])
+            with col_photo2:
+                logo_moe1 = st.file_uploader("Logo premier membre MOE", type=["png", "jpg", "jpeg"])
+
+
         st.subheader("Informations générales")
         moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         
@@ -612,13 +624,13 @@ with col2:
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
             "moa": moa,
-            "direction": {"nom": dir_projet, "poste": titre_projet}, 
+            "direction": {"nom": dir_projet, "poste": titre_projet, "photo_upload": photo_dir_projet}, 
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": row["Nom"], "role": row["Rôle / Entreprise"]} for _, row in ed_moe.iterrows() if str(row["Nom"]).strip()],
             "co_traitant": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
-            "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier},
+            "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier, "photo_upload": photo_dir_chantier},
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
         }
