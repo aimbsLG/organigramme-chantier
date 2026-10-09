@@ -598,7 +598,7 @@ with col2:
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
             "moa": moa,
-            "direction": {"nom": dir_projet, "poste": "Directeur de Projet"},
+            "direction": {"nom": dir_projet, "poste": titre_projet}, 
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": row["Nom"], "role": row["Rôle / Entreprise"]} for _, row in ed_moe.iterrows() if str(row["Nom"]).strip()],
             "co_traitant": co_traitant,
