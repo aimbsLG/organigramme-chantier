@@ -7,7 +7,6 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-
 # ============================================================
 # CONFIGURATION DE LA PAGE WEB
 # ============================================================
@@ -20,7 +19,6 @@ with col_logo:
         st.image("Lg.png", width=120)
 with col_titre:
     st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'>🏗️ Générateur d'Organigramme de Chantier</h1>", unsafe_allow_html=True)
-
 
 # ============================================================
 # COULEURS CHARTE GRAPHIQUE
@@ -173,7 +171,6 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     # --- DETECTION AUTOMATIQUE DE LA PHOTO ---
     chemin_photo = "placeholder_rond.png" # Photo vide par défaut
     
-    # Si le nom n'est pas vide, on cherche une photo correspondante
     if name.strip() != "":
         extensions = [".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"]
         for ext in extensions:
@@ -532,12 +529,12 @@ with col1:
     dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "")
     co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
     
-  st.subheader("Comité de Pilotage")
+    st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
         {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
-        {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
+        {"Nom": "Jean-Stéphane DIDIER", "Poste": "DGA"},
         {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
-        {"Nom": "Micaël GONCALVES", "Poste": "Directeur de l’Excellence opérationnelle"}
+        {"Nom": "Micaël GONCALVES", "Poste": "Directeur Excellence"}
     ])
     ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
     
