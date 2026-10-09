@@ -461,8 +461,28 @@ def generer_presentation(donnees):
         # Le poste affichera désormais "Directeur de Chantier" ou "Directrice de Chantier" sans abréviation
         ajouter_fiche_personne_pptx(slide2, donnees["directeur_chantier"]["poste"], donnees["directeur_chantier"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
 
+    # MOE SIMPLIFIEE S2 (CORRIGÉ)
+    ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
+    cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
+    cadre_moe.fill.solid()
+    cadre_moe.fill.fore_color.rgb = COLOR_WHITE
+    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
+    cadre_moe.shadow.inherit = False
 
-    # MOE SIMPLIFIEE S2
+    # Redéfinition des dimensions indispensables pour éviter l'erreur UnboundLocalError
+    largeur_zone = Inches(1.35)
+    hauteur_zone = Inches(0.75)
+    marge_interne_x = Inches(0.18)
+    marge_interne_y = Inches(0.20)
+    espace_x = Inches(0.14)
+    espace_y = Inches(0.12)
+
+    nb_entreprises = len(donnees.get("moe", [])) if donnees.get("moe") else 1
+    nb_rows = (nb_entreprises + 1) // 2
+    hauteur_cadre_moe = (marge_interne_y * 2) + (nb_rows * hauteur_zone) + ((nb_rows - 1) * espace_y if nb_rows > 1 else 0)
+    cadre_moe.height = hauteur_cadre_moe
+
+    # Boucle de dessin des logos rectangulaires avec l'image chargée depuis le site
     for idx, moe in enumerate(donnees.get("moe", [])):
         if idx >= 8: break
         col_idx = idx % 2
@@ -470,7 +490,6 @@ def generer_presentation(donnees):
         x_logo = Inches(0.40) + marge_interne_x + col_idx * (largeur_zone + espace_x)
         y_logo = Inches(3.85) + marge_interne_y + row_idx * (hauteur_zone + espace_y)
         
-        # Le même logo s'affiche automatiquement ici aussi sur la Slide 2 !
         if moe.get("image_upload") is not None:
             ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone, chemin_placeholder=moe["image_upload"])
         else:
