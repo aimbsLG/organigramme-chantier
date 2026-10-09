@@ -44,13 +44,6 @@ def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemi
     zone_ronde = slide.shapes.add_picture(chemin_placeholder, x, y, width=diametre, height=diametre)
     zone_ronde.auto_shape_type = MSO_SHAPE.OVAL
     
-    # --- NOUVEAUTÉ : ZOOM POUR CACHER LES BORDS ---
-    if zoomer_photo and chemin_placeholder != "placeholder_rond.png":
-        # On rogne 12% (0.12) de l'image de chaque côté pour forcer un zoom
-        zone_ronde.crop_left = 0.12
-        zone_ronde.crop_right = 0.12
-        zone_ronde.crop_top = 0.12
-        zone_ronde.crop_bottom = 0.12
         
     return zone_ronde
 
