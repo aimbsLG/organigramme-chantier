@@ -529,24 +529,25 @@ col1, col2 = st.columns([1, 1.5])
 
 with col1:
     st.header("📋 Informations du chantier")
-    with st.container(height=600, border=False):
+    
+    # Création du conteneur avec scrollbar verticale (hauteur 620px)
+    with st.container(height=620, border=False):
         st.subheader("Informations générales")
         moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         
-        st.subheader("Informations générales")
-        moa = st.text_input("Maître d'Ouvrage (MOA)", "")
-        col_titre_dir, col_nom_dir = st.columns([1, 2])
+        # Menu déroulant pour le Directeur/Directrice de projet
+        col_titre_dir, col_nom_dir = st.columns([1.5, 2.5])
         with col_titre_dir:
             titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
         with col_nom_dir:
             dir_projet = st.text_input("Prénom Nom", "")
-        
+            
         co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
         
         st.subheader("Comité de Pilotage")
         df_copil = pd.DataFrame([
             {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
-            {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
+            {"Nom": "Jean-Stéphane DIDIER", "Poste": "DGA"},
             {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
             {"Nom": "Micaël GONCALVES", "Poste": "Directeur Excellence"}
         ])
@@ -554,8 +555,8 @@ with col1:
         
         st.subheader("Pôle MOE")
         df_moe = pd.DataFrame([
-            {"Nom": "", "Rôle / Entreprise": "Architecte"},
-            {"Nom": "", "Rôle / Entreprise": "BE Structure"},
+            {"Nom": "Luling YANG", "Rôle / Entreprise": "Architecte"},
+            {"Nom": "Camille Nemery", "Rôle / Entreprise": "BE Structure"},
             {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
         ])
         ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
@@ -582,15 +583,15 @@ with col1:
                 maint_contact = st.text_input("Contact", "")
         
         st.markdown("---")
-        st.subheader("Phase Réalisation")
+        st.subheader("Uniquement Phase Réalisation")
+        
+        # Menu déroulant pour le Directeur/Directrice de chantier
         col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
         with col_titre_ch:
             titre_chantier = st.selectbox("Titre ", ["Directeur de Chantier", "Directrice de Chantier"])
         with col_nom_ch:
             dir_chantier = st.text_input("Directeur/trice de Chantier (Prénom Nom)", "")
             
-    
-        
         type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"], horizontal=True)
         
         val_secteur = "Zone 1" if type_orga == "Zones" else "GO"
@@ -601,6 +602,7 @@ with col1:
             {"Nom": "", "Secteur": val_secteur_2}
         ])
         ed_cond = st.data_editor(df_cond, num_rows="dynamic", use_container_width=True, hide_index=True)
+
 
 with col2:
     st.header("⚙️ Génération PPTX")
