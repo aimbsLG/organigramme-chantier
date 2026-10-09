@@ -44,10 +44,22 @@ def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemi
     zone_ronde = slide.shapes.add_picture(chemin_placeholder, x, y, width=diametre, height=diametre)
     zone_ronde.auto_shape_type = MSO_SHAPE.OVAL
     
+    # --- ZOOM POUR CACHER LES BORDS ---
+    if zoomer_photo and chemin_placeholder != "placeholder_rond.png":
+        zone_ronde.crop_left = 0.12
+        zone_ronde.crop_right = 0.12
+        zone_ronde.crop_top = 0.12
+        zone_ronde.crop_bottom = 0.12
         
     return zone_ronde
 
 def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placeholder="placeholder_temp.png"):
+    # 1. Si c'est un fichier directement uploadé depuis Streamlit (objet en mémoire)
+    if hasattr(chemin_placeholder, 'read'):
+        chemin_placeholder.seek(0) # Réinitialise la lecture pour pouvoir l'insérer sur la Slide 1 puis la Slide 2
+        return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
+        
+    # 2. Comportement classique : si c'est un nom de fichier introuvable ou invalide, on crée le rectangle gris
     if not isinstance(chemin_placeholder, str) or not os.path.exists(chemin_placeholder):
         nom_sauvegarde = "placeholder_temp.png"
         if not os.path.exists(nom_sauvegarde):
@@ -57,6 +69,7 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
             draw.rectangle([(0, 0), (299, 199)], outline="#D2D2D2", width=2)
             img.save(nom_sauvegarde)
         chemin_placeholder = nom_sauvegarde
+        
     return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
 
 def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fond, couleur_texte):
@@ -495,36 +508,6 @@ def generer_presentation(donnees):
         else:
             ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone)
 
-    entreprises_moe = []
-    for m in donnees.get("moe", []):
-        ent = m.get("role", "").strip()
-        if ent and ent not in entreprises_moe:
-            entreprises_moe.append(ent)
-            
-    if not entreprises_moe:
-        entreprises_moe = ["MOE Placeholder"]
-
-    nb_entreprises = len(entreprises_moe)
-    nb_rows = (nb_entreprises + 1) // 2
-
-    largeur_zone = Inches(1.35)
-    hauteur_zone = Inches(0.75)
-    marge_interne_x = Inches(0.18)
-    marge_interne_y = Inches(0.20)
-    espace_x = Inches(0.14)
-    espace_y = Inches(0.12)
-
-    hauteur_cadre_moe = (marge_interne_y * 2) + (nb_rows * hauteur_zone) + ((nb_rows - 1) * espace_y if nb_rows > 1 else 0)
-    cadre_moe.height = hauteur_cadre_moe
-
-    for idx, nom_ent in enumerate(entreprises_moe):
-        if idx >= 8: break
-        col_idx = idx % 2
-        row_idx = idx // 2
-        x_logo = Inches(0.40) + marge_interne_x + col_idx * (largeur_zone + espace_x)
-        y_logo = Inches(3.85) + marge_interne_y + row_idx * (hauteur_zone + espace_y)
-        ajouter_zone_image_cliquable(slide2, x_logo, y_logo, largeur_zone, hauteur_zone)
-
     # CONDUCTEURS TRAVAUX S2
     conducteurs = donnees.get("conducteurs_travaux", [])[:3]
     if len(conducteurs) > 0:
@@ -662,8 +645,6 @@ with col1:
 with col2:
     st.header("⚙️ Génération PPTX")
 
-    
-    
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
             "moa": moa,
@@ -689,4 +670,3 @@ with col2:
                     mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     use_container_width=True
                 )
-                
