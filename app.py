@@ -532,18 +532,7 @@ with col1:
     
     # Création du conteneur avec scrollbar verticale (hauteur 620px)
     with st.container(height=620, border=False):
-        # Section dépliante pour charger les photos/logos depuis le PC
-        with st.expander("🖼️ Charger des photos ou logos depuis votre PC", expanded=False):
-            st.info("Sélectionnez vos fichiers ici. Ils seront automatiquement intégrés aux fiches correspondantes.")
-            
-            col_photo1, col_photo2 = st.columns(2)
-            with col_photo1:
-                photo_dir_projet = st.file_uploader("Photo Directeur/trice de Projet", type=["png", "jpg", "jpeg"])
-                photo_dir_chantier = st.file_uploader("Photo Directeur/trice de Chantier", type=["png", "jpg", "jpeg"])
-            with col_photo2:
-                logo_moe1 = st.file_uploader("Logo premier membre MOE", type=["png", "jpg", "jpeg"])
-
-
+        
         st.subheader("Informations générales")
         moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         
@@ -564,15 +553,36 @@ with col1:
             {"Nom": "Micaël GONCALVES", "Poste": "Directeur de l’Excellence opérationnelle"}
         ])
         ed_copil = st.data_editor(df_copil, num_rows="fixed", use_container_width=True, hide_index=True)
-        
+       
         st.subheader("Pôle MOE")
-        df_moe = pd.DataFrame([
-            {"Nom": "", "Rôle / Entreprise": "Architecte"},
-            {"Nom": "", "Rôle / Entreprise": "BE Structure"},
-            {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
-        ])
-        ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
         
+        # Curseur pour choisir dynamiquement le nombre de membres (de 1 à 9)
+        nb_membres_moe = st.slider("Nombre de membres de la MOE", min_value=1, max_value=9, value=3)
+        
+        # Liste pour stocker dynamiquement les informations saisies
+        liste_moe = []
+        
+        # Valeurs par défaut pratiques pour les premières lignes
+        roles_par_defaut = {0: "Architecte", 1: "BE Structure", 2: "BE Fluides"}
+        
+        # Génération dynamique des lignes en fonction du curseur
+        for i in range(nb_membres_moe):
+            st.markdown(f"**Membre {i+1}**")
+            c_input, c_file = st.columns([2.5, 1.5])
+            
+            with c_input:
+                def_role = roles_par_defaut.get(i, "")
+                role_moe = st.text_input(f"Rôle / Entreprise (Membre {i+1})", value=def_role, key=f"role_moe_{i}", label_visibility="collapsed")
+                nom_moe = st.text_input(f"Nom de la personne (Membre {i+1})", value="", key=f"nom_moe_{i}", placeholder="Prénom Nom")
+            
+            with c_file:
+                img_moe = st.file_uploader(f"Logo / Photo (Membre {i+1})", type=["png", "jpg", "jpeg"], key=f"img_moe_{i}", label_visibility="collapsed")
+            
+            liste_moe.append({"nom": nom_moe, "role": role_moe, "image": img_moe})
+            
+            if i < nb_membres_moe - 1:
+                st.markdown("---")
+
         st.subheader("Pôle Support")
         df_support = pd.DataFrame([
             {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
@@ -626,7 +636,8 @@ with col2:
             "moa": moa,
             "direction": {"nom": dir_projet, "poste": titre_projet, "photo_upload": photo_dir_projet}, 
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
-            "moe": [{"nom": row["Nom"], "role": row["Rôle / Entreprise"]} for _, row in ed_moe.iterrows() if str(row["Nom"]).strip()],
+            "moe": [{"nom": m["nom"], "role": m["role"], "image_upload": m["image"]} for m in liste_moe if m["role"].strip()],
+
             "co_traitant": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
