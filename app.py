@@ -529,75 +529,78 @@ col1, col2 = st.columns([1, 1.5])
 
 with col1:
     st.header("📋 Informations du chantier")
-    
-    st.subheader("Informations générales")
-    moa = st.text_input("Maître d'Ouvrage (MOA)", "")
-    col_titre_dir, col_nom_dir = st.columns([1, 2])
-    with col_titre_dir:
-        titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
-    with col_nom_dir:
-        dir_projet = st.text_input("Prénom Nom", "")
-    
-    co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
-    
-    st.subheader("Comité de Pilotage")
-    df_copil = pd.DataFrame([
-        {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
-        {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
-        {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
-        {"Nom": "Micaël GONCALVES", "Poste": "Directeur Excellence"}
-    ])
-    ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
-    
-    st.subheader("Pôle MOE")
-    df_moe = pd.DataFrame([
-        {"Nom": "", "Rôle / Entreprise": "Architecte"},
-        {"Nom": "", "Rôle / Entreprise": "BE Structure"},
-        {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
-    ])
-    ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
-    
-    st.subheader("Pôle Support")
-    df_support = pd.DataFrame([
-        {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
-        {"Nom": "Jérôme TRANCHANT", "Poste": "QSE Sécurité"},
-        {"Nom": "Jérôme JUNIQUE", "Poste": "Chef de service Méthode"}
-    ])
-    ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
-    
-    st.subheader("Mainteneur (laisser vide le cas échéant)")
-    presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
-    
-    maint_contact = ""
-    maint_ent = ""
-    
-    if presence_mainteneur:
-        col_m1, col_m2 = st.columns(2)
-        with col_m1:
-            maint_ent = st.text_input("Entreprise", "")
-        with col_m2:
-            maint_contact = st.text_input("Contact", "")
-    
-    st.markdown("---")
-    st.subheader("Phase Réalisation")
-    col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
-    with col_titre_ch:
-        titre_chantier = st.selectbox("Titre ", ["Directeur de Chantier", "Directrice de Chantier"])
-    with col_nom_ch:
-        dir_chantier = st.text_input("Directeur/trice de Chantier (Prénom Nom)", "")
+    with st.container(height=600, border=False):
+        st.subheader("Informations générales")
+        moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         
-
+        st.subheader("Informations générales")
+        moa = st.text_input("Maître d'Ouvrage (MOA)", "")
+        col_titre_dir, col_nom_dir = st.columns([1, 2])
+        with col_titre_dir:
+            titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
+        with col_nom_dir:
+            dir_projet = st.text_input("Prénom Nom", "")
+        
+        co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
+        
+        st.subheader("Comité de Pilotage")
+        df_copil = pd.DataFrame([
+            {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
+            {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
+            {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
+            {"Nom": "Micaël GONCALVES", "Poste": "Directeur Excellence"}
+        ])
+        ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
+        
+        st.subheader("Pôle MOE")
+        df_moe = pd.DataFrame([
+            {"Nom": "", "Rôle / Entreprise": "Architecte"},
+            {"Nom": "", "Rôle / Entreprise": "BE Structure"},
+            {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
+        ])
+        ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
+        
+        st.subheader("Pôle Support")
+        df_support = pd.DataFrame([
+            {"Nom": "Emmanuel SAURIN", "Poste": "Réf. Bas Carbone"},
+            {"Nom": "Jérôme TRANCHANT", "Poste": "QSE Sécurité"},
+            {"Nom": "Jérôme JUNIQUE", "Poste": "Chef de service Méthode"}
+        ])
+        ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
+        
+        st.subheader("Mainteneur (laisser vide le cas échéant)")
+        presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
+        
+        maint_contact = ""
+        maint_ent = ""
+        
+        if presence_mainteneur:
+            col_m1, col_m2 = st.columns(2)
+            with col_m1:
+                maint_ent = st.text_input("Entreprise", "")
+            with col_m2:
+                maint_contact = st.text_input("Contact", "")
+        
+        st.markdown("---")
+        st.subheader("Phase Réalisation")
+        col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
+        with col_titre_ch:
+            titre_chantier = st.selectbox("Titre ", ["Directeur de Chantier", "Directrice de Chantier"])
+        with col_nom_ch:
+            dir_chantier = st.text_input("Directeur/trice de Chantier (Prénom Nom)", "")
+            
     
-    type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"], horizontal=True)
-    
-    val_secteur = "Zone 1" if type_orga == "Zones" else "GO"
-    val_secteur_2 = "Zone 2" if type_orga == "Zones" else "CE Archi"
-    
-    df_cond = pd.DataFrame([
-        {"Nom": "", "Secteur": val_secteur},
-        {"Nom": "", "Secteur": val_secteur_2}
-    ])
-    ed_cond = st.data_editor(df_cond, num_rows="dynamic", use_container_width=True, hide_index=True)
+        
+        type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"], horizontal=True)
+        
+        val_secteur = "Zone 1" if type_orga == "Zones" else "GO"
+        val_secteur_2 = "Zone 2" if type_orga == "Zones" else "CE Archi"
+        
+        df_cond = pd.DataFrame([
+            {"Nom": "", "Secteur": val_secteur},
+            {"Nom": "", "Secteur": val_secteur_2}
+        ])
+        ed_cond = st.data_editor(df_cond, num_rows="dynamic", use_container_width=True, hide_index=True)
 
 with col2:
     st.header("⚙️ Génération PPTX")
