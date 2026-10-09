@@ -607,9 +607,9 @@ with col1:
                 def_role = roles_par_defaut.get(i, "")
                 
                 # 3 champs bien séparés pour plus de clarté
-                ent_moe = st.text_input("Entreprise", key=f"ent_moe_{i}", placeholder="Ex: BETEG")
-                role_moe = st.text_input("Rôle", value=def_role, key=f"role_moe_{i}", placeholder="Ex: BE Gros-Oeuvre")
-                nom_moe = st.text_input("Contact", value="", key=f"nom_moe_{i}", placeholder="Ex: Magali Magnien")
+                ent_moe = st.text_input("Entreprise", key=f"ent_moe_{i}", placeholder="")
+                role_moe = st.text_input("Rôle", value=def_role, key=f"role_moe_{i}", placeholder="")
+                nom_moe = st.text_input("Contact", value="", key=f"nom_moe_{i}", placeholder="")
             
             with c_file:
                 # Ajout du logo
