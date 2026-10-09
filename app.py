@@ -13,16 +13,14 @@ from pptx.enum.shapes import MSO_SHAPE
 st.set_page_config(page_title="Générateur Organigramme PPTX", layout="wide")
 
 # Affichage du Logo Lg et du Titre en rouge
-col_logo, col_titre = st.columns([1, 11])
+col_logo, col_titre = st.columns([1.5, 10.5])
 with col_logo:
     if os.path.exists("Lg.png"):
         st.image("Lg.png", width=120)
 with col_titre:
-    st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'> Générateur d'Organigramme Léon Grosse Grand Projet </h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: #CD2127; margin-top: -15px;'>🏗️ Générateur d'Organigramme de Chantier</h1>", unsafe_allow_html=True)
 
-# ============================================================
-# COULEURS CHARTE GRAPHIQUE
-# ============================================================
+
 # ============================================================
 # COULEURS CHARTE GRAPHIQUE
 # ============================================================
@@ -170,7 +168,20 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     diametre_rond = Inches(0.59)
     x_rond = left + (width / 2) - (diametre_rond / 2)
     y_rond = top - (diametre_rond) + Inches(0.13)
-    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond)
+    
+    # --- DETECTION AUTOMATIQUE DE LA PHOTO ---
+    chemin_photo = "placeholder_rond.png" # Photo vide par défaut
+    
+    # Si le nom n'est pas vide, on cherche une photo correspondante
+    if name.strip() != "":
+        extensions = [".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"]
+        for ext in extensions:
+            nom_fichier = f"{name.strip()}{ext}"
+            if os.path.exists(nom_fichier):
+                chemin_photo = nom_fichier
+                break
+                
+    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo)
 
 def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, height):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
@@ -447,7 +458,6 @@ def generer_presentation(donnees):
     cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
     cadre_moe.shadow.inherit = False
 
-    # CORRECTION : Un carré gris par membre MOE ajouté dans le tableau, sans conditions de parenthèses
     entreprises_moe = []
     for m in donnees.get("moe", []):
         ent = m.get("role", "").strip()
@@ -521,11 +531,11 @@ with col1:
     dir_projet = st.text_input("Directeur de Projet (Prénom Nom)", "")
     co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
     
-    st.subheader("Comité de Pilotage")
+  st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
         {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
         {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
-        {"Nom": "Charlotte VIGUIER", "Poste": "Dir. Grands Projets"},
+        {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
         {"Nom": "Micaël GONCALVES", "Poste": "Directeur de l’Excellence opérationnelle"}
     ])
     ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
@@ -575,7 +585,7 @@ with col1:
 
 with col2:
     st.header("⚙️ Génération PPTX")
-   
+    st.info("Le fichier sera généré avec des cases vides prêtes à recevoir vos logos directement dans PowerPoint.")
     
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
