@@ -551,7 +551,7 @@ with col1:
             {"Nom": "Charlotte VIGUIER", "Poste": "Directeur Grands Projets"},
             {"Nom": "Micaël GONCALVES", "Poste": "Directeur Excellence"}
         ])
-        ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
+        ed_copil = st.data_editor(df_copil, num_rows="fixed", use_container_width=True, hide_index=True)
         
         st.subheader("Pôle MOE")
         df_moe = pd.DataFrame([
@@ -559,7 +559,7 @@ with col1:
             {"Nom": "", "Rôle / Entreprise": "BE Structure"},
             {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
         ])
-        ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
+        ed_moe = st.data_editor(df_moe, num_rows="fixed", use_container_width=True, hide_index=True)
         
         st.subheader("Pôle Support")
         df_support = pd.DataFrame([
