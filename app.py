@@ -448,9 +448,11 @@ def generer_presentation(donnees):
                 ajouter_fiche_personne_pptx(slide2, membre["poste"], membre["nom"], coords_copil[i][0], coords_copil[i][1], fiche_w, fiche_h)
 
     # DIRECTEUR CHANTIER S2
-    if donnees["directeur_chantier"]:
+    if donnees["directeur_chantier"]["nom"]:
         ajouter_titre_section_pptx(slide2, "DIRECTEUR DE CHANTIER", CENTRE_PAGE - (Inches(2.4)/2), Inches(1.45), Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_RED)
-        ajouter_fiche_personne_pptx(slide2, "Dir. Chantier", donnees["directeur_chantier"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
+        # Le poste affichera désormais "Directeur de Chantier" ou "Directrice de Chantier" sans abréviation
+        ajouter_fiche_personne_pptx(slide2, donnees["directeur_chantier"]["poste"], donnees["directeur_chantier"]["nom"], CENTRE_PAGE - (fiche_w/2), Inches(2.55), fiche_w, fiche_h)
+
 
     # MOE SIMPLIFIEE S2
     ajouter_titre_section_pptx(slide2, "Pôle MOE", Inches(0.40), Inches(3.25), Inches(3.20), Inches(0.45), COLOR_SAND, COLOR_GREEN)
@@ -577,8 +579,15 @@ with col1:
             maint_contact = st.text_input("Contact", "")
     
     st.markdown("---")
-    st.subheader("Uniquement Phase Réalisation")
-    dir_chantier = st.text_input("Directeur de Chantier", "")
+    st.subheader("Phase Réalisation")
+    col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
+    with col_titre_ch:
+        titre_chantier = st.selectbox("Titre ", ["Directeur de Chantier", "Directrice de Chantier"])
+    with col_nom_ch:
+        dir_chantier = st.text_input("Directeur/trice de Chantier (Prénom Nom)", "")
+        
+
+    
     type_orga = st.radio("Organisation du chantier :", ["Zones", "Corps d'État"], horizontal=True)
     
     val_secteur = "Zone 1" if type_orga == "Zones" else "GO"
@@ -604,7 +613,7 @@ with col2:
             "co_traitant": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
-            "directeur_chantier": dir_chantier,
+            "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier},
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
         }
