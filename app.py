@@ -525,7 +525,7 @@ def generer_presentation(donnees):
 # ============================================================
 # INTERFACE WEB STREAMLIT
 # ============================================================
-col1, col2 = st.columns([1, 1.5])
+col1, col2 = st.columns([1.5, 1])
 
 with col1:
     st.header("📋 Informations du chantier")
