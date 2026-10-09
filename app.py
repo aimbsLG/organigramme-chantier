@@ -33,15 +33,25 @@ COLOR_BLUE      = RGBColor(85, 198, 221)
 # ============================================================
 # FONCTIONS DE DESSIN
 # ============================================================
-def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemin_placeholder="placeholder_rond.png"):
+def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemin_placeholder="placeholder_rond.png", zoomer_photo=False):
     if not os.path.exists(chemin_placeholder):
         from PIL import Image, ImageDraw
         img = Image.new("RGB", (400, 400), "#FFFFFF")
         draw = ImageDraw.Draw(img)
         draw.ellipse([(10, 10), (390, 390)], fill="#F8F8F8", outline="#D2D2D2", width=3)
         img.save(chemin_placeholder)
+    
     zone_ronde = slide.shapes.add_picture(chemin_placeholder, x, y, width=diametre, height=diametre)
     zone_ronde.auto_shape_type = MSO_SHAPE.OVAL
+    
+    # --- NOUVEAUTÉ : ZOOM POUR CACHER LES BORDS ---
+    if zoomer_photo and chemin_placeholder != "placeholder_rond.png":
+        # On rogne 12% (0.12) de l'image de chaque côté pour forcer un zoom
+        zone_ronde.crop_left = 0.12
+        zone_ronde.crop_right = 0.12
+        zone_ronde.crop_top = 0.12
+        zone_ronde.crop_bottom = 0.12
+        
     return zone_ronde
 
 def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placeholder="placeholder_temp.png"):
@@ -179,7 +189,8 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
                 chemin_photo = nom_fichier
                 break
                 
-    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo)
+    # On active zoomer_photo=True pour ces fiches
+    ajouter_zone_image_ronde_cliquable(slide, x_rond, y_rond, diametre_rond, chemin_placeholder=chemin_photo, zoomer_photo=True)
 
 def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, height):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
@@ -610,3 +621,4 @@ with col2:
                     mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     use_container_width=True
                 )
+                
