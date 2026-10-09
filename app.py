@@ -49,30 +49,25 @@ def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemi
 def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placeholder="placeholder_temp.png"):
     from PIL import Image, ImageDraw
     
-    # Calcul dynamique de la taille de la case en pixels pour éviter la déformation
     w_px = int(largeur / 914400 * 300)
     h_px = int(hauteur / 914400 * 300)
     
     if hasattr(chemin_placeholder, 'read'):
         chemin_placeholder.seek(0)
         try:
-            # Création de la toile blanche aux dimensions exactes (SANS BORDURE GRISE)
+            # Toile 100% blanche, SANS bordure grise
             img_base = Image.new("RGB", (w_px, h_px), "#FFFFFF")
             
-            # Ouverture du logo uploadé
             img_logo = Image.open(chemin_placeholder).convert("RGBA")
             
-            # Gestion de la transparence : ajout d'un fond blanc
             fond_blanc = Image.new("RGBA", img_logo.size, "WHITE")
             fond_blanc.paste(img_logo, (0, 0), img_logo)
             img_logo = fond_blanc.convert("RGB")
             
-            # MARGE DE SÉCURITÉ : On réduit le logo à 65% de l'espace
             max_w = int(w_px * 0.65)
             max_h = int(h_px * 0.65)
             img_logo.thumbnail((max_w, max_h), Image.Resampling.LANCZOS)
             
-            # Centrage parfait dans la case
             paste_x = (w_px - img_logo.width) // 2
             paste_y = (h_px - img_logo.height) // 2
             
@@ -86,7 +81,7 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
             chemin_placeholder.seek(0)
             return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
             
-    # Comportement pour générer les cases vides (on garde la bordure grise ici)
+    # Comportement pour générer les cases vides (on garde la bordure grise pour voir la case)
     if not isinstance(chemin_placeholder, str) or not os.path.exists(chemin_placeholder):
         img = Image.new("RGB", (w_px, h_px), "#F8F8F8")
         draw = ImageDraw.Draw(img)
@@ -96,6 +91,7 @@ def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placehold
         return slide.shapes.add_picture(temp_empty_path, x, y, width=largeur, height=hauteur)
         
     return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
+
 def ajouter_titre_section_pptx(slide, texte, x, y, largeur, hauteur, couleur_fond, couleur_texte):
     diametre = Inches(0.45)
     x_rectangle = x + (diametre / 2)
@@ -357,7 +353,7 @@ def generer_presentation(donnees):
     p_t1.font.color.rgb = COLOR_RED
     p_t1.alignment = PP_ALIGN.CENTER
 
-    # MOA
+    # MOA S1
     gauche_moa = Inches(0.40)
     largeur_moa = Inches(2.20)
     
@@ -457,6 +453,15 @@ def generer_presentation(donnees):
         ajouter_zone_image_cliquable(slide2, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00), chemin_placeholder=donnees["logo_moa"])
     else:
         ajouter_zone_image_cliquable(slide2, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00))
+        
+    box_nom_moa2 = slide2.shapes.add_textbox(gauche_moa, Inches(1.10), largeur_moa, Inches(0.35))
+    p_nom_moa2 = box_nom_moa2.text_frame.paragraphs[0]
+    p_nom_moa2.text = donnees["moa"].upper()
+    p_nom_moa2.font.name = "Poppins"
+    p_nom_moa2.font.size = Pt(12)
+    p_nom_moa2.font.bold = True
+    p_nom_moa2.font.color.rgb = COLOR_TEXT_DARK
+    p_nom_moa2.alignment = PP_ALIGN.CENTER
     
     forme2 = slide2.shapes.add_shape(MSO_SHAPE.RECTANGLE, gauche_moa, Inches(1.50), largeur_moa, Inches(0.80))
     forme2.fill.solid()
@@ -569,6 +574,7 @@ with col1:
             moa = st.text_input("Maître d'Ouvrage (MOA)", "")
         with col_moa_img:
             logo_moa = st.file_uploader("Logo MOA", type=["png", "jpg", "jpeg"], key="logo_moa", label_visibility="collapsed")
+            
         col_titre_dir, col_nom_dir = st.columns([1.5, 2.5])
         with col_titre_dir:
             titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
@@ -679,3 +685,4 @@ with col2:
                     mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     use_container_width=True
                 )
+                
