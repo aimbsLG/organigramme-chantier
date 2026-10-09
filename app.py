@@ -634,14 +634,13 @@ with col2:
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
             "moa": moa,
-            "direction": {"nom": dir_projet, "poste": titre_projet, "photo_upload": photo_dir_projet}, 
+            "direction": {"nom": dir_projet, "poste": titre_projet},
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": m["nom"], "role": m["role"], "image_upload": m["image"]} for m in liste_moe if m["role"].strip()],
-
             "co_traitant": co_traitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
-            "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier, "photo_upload": photo_dir_chantier},
+            "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier},
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
         }
