@@ -605,7 +605,7 @@ with col1:
             with c_input:
                 def_role = roles_par_defaut.get(i, "")
                 role_moe = st.text_input(f"Rôle / Entreprise (Membre {i+1})", value=def_role, key=f"role_moe_{i}", label_visibility="collapsed")
-                nom_moe = st.text_input(f"Nom de la personne (Membre {i+1})", value="", key=f"nom_moe_{i}", placeholder="Prénom Nom")
+                nom_moe = st.text_input(f"(Entreprise {i+1})", value="", key=f"nom_moe_{i}", placeholder="Prénom Nom")
             
             with c_file:
                 img_moe = st.file_uploader(f"Logo / Photo (Membre {i+1})", type=["png", "jpg", "jpeg"], key=f"img_moe_{i}", label_visibility="collapsed")
