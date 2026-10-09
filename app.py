@@ -609,15 +609,13 @@ with col1:
                 # 3 champs bien séparés pour plus de clarté
                 ent_moe = st.text_input("Entreprise", key=f"ent_moe_{i}", placeholder="Ex: Léon Grosse")
                 role_moe = st.text_input("Rôle", value=def_role, key=f"role_moe_{i}", placeholder="Ex: Architecte")
-                nom_moe = st.text_input("Contact", value="", key=f"nom_moe_{i}", placeholder="Ex: Maud CAUBET")
+
             
             with c_file:
                 # Ajout du logo
                 img_moe = st.file_uploader("Logo de l'entreprise", type=["png", "jpg", "jpeg"], key=f"img_moe_{i}")
             
-            # On fusionne le rôle et l'entreprise pour correspondre au format attendu par le PowerPoint
-            role_final = f"{role_moe} ({ent_moe})" if ent_moe.strip() != "" else role_moe
-            
+ 
             liste_moe.append({"nom": nom_moe, "role": role_final, "image": img_moe})
             
             if i < nb_membres_moe - 1:
