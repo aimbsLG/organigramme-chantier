@@ -43,50 +43,60 @@ def ajouter_zone_image_ronde_cliquable(slide, x, y, diametre=Inches(1.50), chemi
     
     zone_ronde = slide.shapes.add_picture(chemin_placeholder, x, y, width=diametre, height=diametre)
     zone_ronde.auto_shape_type = MSO_SHAPE.OVAL
+        
     return zone_ronde
 
 def ajouter_zone_image_cliquable(slide, x, y, largeur, hauteur, chemin_placeholder="placeholder_temp.png"):
     from PIL import Image, ImageDraw
     
-    # 1. Si c'est un fichier directement uploadé depuis Streamlit
+    # Calcul dynamique de la taille de la case en pixels pour éviter la déformation
+    # 1 Inch = 914400 EMU. Cela garantit que l'image a exactement les mêmes proportions que la case PPTX !
+    w_px = int(largeur / 914400 * 300)
+    h_px = int(hauteur / 914400 * 300)
+    
     if hasattr(chemin_placeholder, 'read'):
         chemin_placeholder.seek(0)
         try:
-            # On crée une toile blanche avec une bordure grise (la fameuse case)
-            img_base = Image.new("RGB", (300, 200), "#FFFFFF")
+            # Création de la toile blanche aux dimensions exactes
+            img_base = Image.new("RGB", (w_px, h_px), "#FFFFFF")
             draw = ImageDraw.Draw(img_base)
-            draw.rectangle([(0, 0), (299, 199)], outline="#D2D2D2", width=2)
+            draw.rectangle([(0, 0), (w_px-1, h_px-1)], outline="#D2D2D2", width=3)
             
-            # On ouvre le logo de l'utilisateur
+            # Ouverture du logo uploadé
             img_logo = Image.open(chemin_placeholder).convert("RGBA")
-            # On réduit le logo pour qu'il garde ses proportions et rentre avec des marges (260x160)
-            img_logo.thumbnail((260, 160), Image.Resampling.LANCZOS)
             
-            # On calcule la position pour le centrer parfaitement dans la case
-            paste_x = (300 - img_logo.width) // 2
-            paste_y = (200 - img_logo.height) // 2
+            # Gestion de la transparence : ajout d'un fond blanc
+            fond_blanc = Image.new("RGBA", img_logo.size, "WHITE")
+            fond_blanc.paste(img_logo, (0, 0), img_logo)
+            img_logo = fond_blanc.convert("RGB")
             
-            # On colle le logo au centre de la case
-            img_base.paste(img_logo, (paste_x, paste_y), img_logo)
+            # MARGE DE SÉCURITÉ : On réduit le logo à 65% de l'espace pour ne pas combler la case
+            max_w = int(w_px * 0.65)
+            max_h = int(h_px * 0.65)
+            img_logo.thumbnail((max_w, max_h), Image.Resampling.LANCZOS)
+            
+            # Centrage parfait dans la case
+            paste_x = (w_px - img_logo.width) // 2
+            paste_y = (h_px - img_logo.height) // 2
+            
+            img_base.paste(img_logo, (paste_x, paste_y))
             
             temp_logo_path = "temp_logo_upload.png"
             img_base.save(temp_logo_path)
             
             return slide.shapes.add_picture(temp_logo_path, x, y, width=largeur, height=hauteur)
         except Exception as e:
-            # Sécurité en cas d'erreur de lecture
             chemin_placeholder.seek(0)
             return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
             
-    # 2. Comportement classique pour générer les cases vides
+    # Comportement pour générer les cases vides
     if not isinstance(chemin_placeholder, str) or not os.path.exists(chemin_placeholder):
-        nom_sauvegarde = "placeholder_temp.png"
-        if not os.path.exists(nom_sauvegarde):
-            img = Image.new("RGB", (300, 200), "#F8F8F8")
-            draw = ImageDraw.Draw(img)
-            draw.rectangle([(0, 0), (299, 199)], outline="#D2D2D2", width=2)
-            img.save(nom_sauvegarde)
-        chemin_placeholder = nom_sauvegarde
+        img = Image.new("RGB", (w_px, h_px), "#F8F8F8")
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([(0, 0), (w_px-1, h_px-1)], outline="#D2D2D2", width=3)
+        temp_empty_path = f"temp_empty_{w_px}_{h_px}.png"
+        img.save(temp_empty_path)
+        return slide.shapes.add_picture(temp_empty_path, x, y, width=largeur, height=hauteur)
         
     return slide.shapes.add_picture(chemin_placeholder, x, y, width=largeur, height=hauteur)
 
@@ -202,7 +212,6 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     x_rond = left + (width / 2) - (diametre_rond / 2)
     y_rond = top - (diametre_rond) + Inches(0.13)
     
-    # --- DETECTION AUTOMATIQUE DE LA PHOTO ---
     chemin_photo = "placeholder_rond.png"
     
     if name.strip() != "":
