@@ -555,8 +555,8 @@ with col1:
         
         st.subheader("Pôle MOE")
         df_moe = pd.DataFrame([
-            {"Nom": "Luling YANG", "Rôle / Entreprise": "Architecte"},
-            {"Nom": "Camille Nemery", "Rôle / Entreprise": "BE Structure"},
+            {"Nom": "", "Rôle / Entreprise": "Architecte"},
+            {"Nom": "", "Rôle / Entreprise": "BE Structure"},
             {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
         ])
         ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
