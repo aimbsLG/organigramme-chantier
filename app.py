@@ -7,6 +7,7 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
+
 # ============================================================
 # CONFIGURATION DE LA PAGE WEB
 # ============================================================
