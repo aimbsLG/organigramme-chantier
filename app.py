@@ -583,7 +583,7 @@ with col1:
                 maint_contact = st.text_input("Contact", "")
         
         st.markdown("---")
-        st.subheader("Uniquement Phase Réalisation")
+        st.subheader("Phase Réalisation")
         
         # Menu déroulant pour le Directeur/Directrice de chantier
         col_titre_ch, col_nom_ch = st.columns([1.5, 2.5])
