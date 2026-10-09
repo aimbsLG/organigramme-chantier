@@ -524,9 +524,9 @@ with col1:
     st.subheader("Comité de Pilotage")
     df_copil = pd.DataFrame([
         {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
-        {"Nom": "Jean-Stéphane DIDIER", "Poste": "DGA"},
+        {"Nom": "Jean-Stéphane DIDIER", "Poste": "Directeur Général Adjoint"},
         {"Nom": "Charlotte VIGUIER", "Poste": "Dir. Grands Projets"},
-        {"Nom": "Micaël GONCALVES", "Poste": "Dir. Excellence"}
+        {"Nom": "Micaël GONCALVES", "Poste": "Directeur de l’Excellence opérationnelle"}
     ])
     ed_copil = st.data_editor(df_copil, num_rows="dynamic", use_container_width=True, hide_index=True)
     
