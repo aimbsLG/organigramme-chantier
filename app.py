@@ -559,7 +559,7 @@ with col1:
             {"Nom": "", "Rôle / Entreprise": "BE Structure"},
             {"Nom": "", "Rôle / Entreprise": "BE Fluides"}
         ])
-        ed_moe = st.data_editor(df_moe, num_rows="fixed", use_container_width=True, hide_index=True)
+        ed_moe = st.data_editor(df_moe, num_rows="dynamic", use_container_width=True, hide_index=True)
         
         st.subheader("Pôle Support")
         df_support = pd.DataFrame([
@@ -567,7 +567,7 @@ with col1:
             {"Nom": "Jérôme TRANCHANT", "Poste": "QSE Sécurité"},
             {"Nom": "Jérôme JUNIQUE", "Poste": "Chef de service Méthode"}
         ])
-        ed_support = st.data_editor(df_support, num_rows="dynamic", use_container_width=True, hide_index=True)
+        ed_support = st.data_editor(df_support, num_rows="fixed", use_container_width=True, hide_index=True)
         
         st.subheader("Mainteneur (laisser vide le cas échéant)")
         presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
