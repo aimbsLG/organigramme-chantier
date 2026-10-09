@@ -360,7 +360,11 @@ def generer_presentation(donnees):
     # MOA
     gauche_moa = Inches(0.40)
     largeur_moa = Inches(2.20)
-    ajouter_zone_image_cliquable(slide1, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00))
+    
+    if donnees.get("logo_moa") is not None:
+        ajouter_zone_image_cliquable(slide1, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00), chemin_placeholder=donnees["logo_moa"])
+    else:
+        ajouter_zone_image_cliquable(slide1, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00))
     
     box_nom_moa1 = slide1.shapes.add_textbox(gauche_moa, Inches(1.10), largeur_moa, Inches(0.35))
     p_nom_moa1 = box_nom_moa1.text_frame.paragraphs[0]
@@ -449,15 +453,10 @@ def generer_presentation(donnees):
     p_t2.alignment = PP_ALIGN.CENTER
 
     # MOA S2
-    ajouter_zone_image_cliquable(slide2, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00))
-    box_nom_moa2 = slide2.shapes.add_textbox(gauche_moa, Inches(1.10), largeur_moa, Inches(0.35))
-    p_nom_moa2 = box_nom_moa2.text_frame.paragraphs[0]
-    p_nom_moa2.text = donnees["moa"].upper()
-    p_nom_moa2.font.name = "Poppins"
-    p_nom_moa2.font.size = Pt(12)
-    p_nom_moa2.font.bold = True
-    p_nom_moa2.font.color.rgb = COLOR_TEXT_DARK
-    p_nom_moa2.alignment = PP_ALIGN.CENTER
+    if donnees.get("logo_moa") is not None:
+        ajouter_zone_image_cliquable(slide2, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00), chemin_placeholder=donnees["logo_moa"])
+    else:
+        ajouter_zone_image_cliquable(slide2, gauche_moa, Inches(0.10), largeur_moa, Inches(1.00))
     
     forme2 = slide2.shapes.add_shape(MSO_SHAPE.RECTANGLE, gauche_moa, Inches(1.50), largeur_moa, Inches(0.80))
     forme2.fill.solid()
@@ -565,8 +564,11 @@ with col1:
     with st.container(height=620, border=False):
         
         st.subheader("Informations générales")
-        moa = st.text_input("Maître d'Ouvrage (MOA)", "")
-        
+        col_moa_txt, col_moa_img = st.columns([2.5, 1.5])
+        with col_moa_txt:
+            moa = st.text_input("Maître d'Ouvrage (MOA)", "")
+        with col_moa_img:
+            logo_moa = st.file_uploader("Logo MOA", type=["png", "jpg", "jpeg"], key="logo_moa", label_visibility="collapsed")
         col_titre_dir, col_nom_dir = st.columns([1.5, 2.5])
         with col_titre_dir:
             titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
@@ -654,6 +656,7 @@ with col2:
     if st.button("Générer mon Organigramme PPTX", type="primary", use_container_width=True):
         donnees = {
             "moa": moa,
+            "logo_moa": logo_moa,
             "direction": {"nom": dir_projet, "poste": titre_projet},
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": m["nom"], "role": m["role"], "image_upload": m["image"]} for m in liste_moe if m["role"].strip()],
