@@ -274,8 +274,7 @@ def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, heigh
     else:
         ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img)
 
-
-def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height):
+def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height, image_upload=None):
     card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
     card.fill.solid()
     card.fill.fore_color.rgb = COLOR_SAND
@@ -313,7 +312,11 @@ def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height
     hauteur_img = Inches(0.50)
     x_img = left + (width / 2) - (largeur_img / 2)
     y_img = top - hauteur_img
-    ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img)
+    
+    if image_upload is not None:
+        ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img, chemin_placeholder=image_upload)
+    else:
+        ajouter_zone_image_cliquable(slide, x_img, y_img, largeur_img, hauteur_img)
 
 
 # ============================================================
@@ -425,11 +428,14 @@ def generer_presentation(donnees):
             x = Inches(0.50) + (idx % 3) * Inches(1.75)
             y = y_fiches_moe + (idx // 3) * Inches(1.45)
             ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h, image_upload=moe.get("image_upload"))
-
-    # MAINTENEUR
+    maint_contact = ""
+    maint_ent = ""
+    logo_maint = None
+        
+# MAINTENEUR
     if donnees["mainteneur"]["entreprise"] and donnees["mainteneur"]["entreprise"] != "Aucun":
         ajouter_titre_section_pptx(slide1, "Mainteneur", CENTRE_PAGE - Inches(1.2), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_TEXT_DARK)
-        ajouter_fiche_personne_gris_pptx(slide1, donnees["mainteneur"]["entreprise"], donnees["mainteneur"]["contact"], CENTRE_PAGE - (fiche_w/2), Inches(4.93), fiche_w, fiche_h)
+        ajouter_fiche_personne_gris_pptx(slide1, donnees["mainteneur"]["entreprise"], donnees["mainteneur"]["contact"], CENTRE_PAGE - (fiche_w/2), Inches(4.93), fiche_w, fiche_h, image_upload=donnees["mainteneur"].get("logo"))
 
     # SUPPORT
     if donnees["services_internes"]:
@@ -648,13 +654,16 @@ with col1:
         
         maint_contact = ""
         maint_ent = ""
+        logo_maint = None
         
         if presence_mainteneur:
-            col_m1, col_m2 = st.columns(2)
+            col_m1, col_m2, col_m3 = st.columns([1.5, 1.5, 1])
             with col_m1:
                 maint_ent = st.text_input("Entreprise", "")
             with col_m2:
                 maint_contact = st.text_input("Contact", "")
+            with col_m3:
+                logo_maint = st.file_uploader("Logo", type=["png", "jpg", "jpeg"], key="logo_maint", label_visibility="collapsed")
         
         st.markdown("---")
         st.subheader("Phase Réalisation")
@@ -689,7 +698,7 @@ with col2:
             "co_traitant": co_traitant,
             "logo_cotraitant": logo_cotraitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
-            "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
+            "mainteneur": {"contact": maint_contact, "entreprise": maint_ent, "logo": logo_maint},
             "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier},
             "structure_type": type_orga, 
             "conducteurs_travaux": [{"nom": row["Nom"], "secteur": row["Secteur"]} for _, row in ed_cond.iterrows() if str(row["Nom"]).strip()]
