@@ -403,7 +403,7 @@ def generer_presentation(donnees):
         if donnees.get("logo_cotraitant") is not None:
             ajouter_zone_image_cliquable(slide1, x_cotr, y_cotr, Inches(1.35), Inches(0.75), chemin_placeholder=donnees["logo_cotraitant"])
         else:
-            ajouter_zone_image_cliquable(slide1, x_cotr, y_cotr, Inches(1.35), Inches(0.75)))
+            ajouter_zone_image_cliquable(slide1, x_cotr, y_cotr, Inches(1.35), Inches(0.75))
 
     # DIRECTION DE PROJET
     if donnees["direction"]["nom"]:
