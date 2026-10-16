@@ -393,9 +393,17 @@ def generer_presentation(donnees):
     p_m2.alignment = PP_ALIGN.CENTER
 
     # CO-TRAITANT
+# CO-TRAITANT
     if donnees["co_traitant"] and donnees["co_traitant"] not in ["Aucun", ""]:
         ajouter_titre_section_pptx(slide1, "CO-TRAITANT", Inches(3.20), Inches(1.45), Inches(2.40), Inches(0.45), COLOR_SAND, COLOR_BLUE)
-        ajouter_zone_image_cliquable(slide1, Inches(3.20) + (Inches(2.40)/2) - (Inches(1.35)/2), Inches(2.05), Inches(1.35), Inches(0.75))
+        
+        x_cotr = Inches(3.20) + (Inches(2.40)/2) - (Inches(1.35)/2)
+        y_cotr = Inches(2.05)
+        
+        if donnees.get("logo_cotraitant") is not None:
+            ajouter_zone_image_cliquable(slide1, x_cotr, y_cotr, Inches(1.35), Inches(0.75), chemin_placeholder=donnees["logo_cotraitant"])
+        else:
+            ajouter_zone_image_cliquable(slide1, x_cotr, y_cotr, Inches(1.35), Inches(0.75)))
 
     # DIRECTION DE PROJET
     if donnees["direction"]["nom"]:
@@ -581,7 +589,11 @@ with col1:
         with col_nom_dir:
             dir_projet = st.text_input("Prénom Nom", "")
             
-        co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
+        col_cotr_txt, col_cotr_img = st.columns([2.5, 1.5])
+        with col_cotr_txt:
+            co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
+        with col_cotr_img:
+            logo_cotraitant = st.file_uploader("Logo Co-traitant", type=["png", "jpg", "jpeg"], key="logo_cotraitant", label_visibility="collapsed")
         
         st.subheader("Comité de Pilotage")
         df_copil = pd.DataFrame([
@@ -675,6 +687,7 @@ with col2:
             "copil": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_copil.iterrows() if str(row["Nom"]).strip()],
             "moe": [{"nom": m["nom"], "role": m["role"], "image_upload": m["image"]} for m in liste_moe if m["role"].strip()],
             "co_traitant": co_traitant,
+            "logo_cotraitant": logo_cotraitant,
             "services_internes": [{"nom": row["Nom"], "poste": row["Poste"]} for _, row in ed_support.iterrows() if str(row["Nom"]).strip()],
             "mainteneur": {"contact": maint_contact, "entreprise": maint_ent},
             "directeur_chantier": {"nom": dir_chantier, "poste": titre_chantier},
