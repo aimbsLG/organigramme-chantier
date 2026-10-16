@@ -594,13 +594,19 @@ with col1:
             titre_projet = st.selectbox("Titre", ["Directeur de Projet", "Directrice de Projet"])
         with col_nom_dir:
             dir_projet = st.text_input("Prénom Nom", "")
-            
-        col_cotr_txt, col_cotr_img = st.columns([2.5, 1.5])
-        with col_cotr_txt:
-            co_traitant = st.text_input("Co-traitant (laisser vide le cas échéant)", "")
-        with col_cotr_img:
-            logo_cotraitant = st.file_uploader("Logo Co-traitant", type=["png", "jpg", "jpeg"], key="logo_cotraitant", label_visibility="collapsed")
+# --- Section Co-traitant avec case à cocher ---
+        presence_cotraitant = st.checkbox("Ajouter un Co-traitant")
         
+        co_traitant = ""
+        logo_cotraitant = None
+        
+        if presence_cotraitant:
+            col_cotr_txt, col_cotr_img = st.columns([2.5, 1.5])
+            with col_cotr_txt:
+                co_traitant = st.text_input("Nom de l'entreprise co-traitante", "")
+            with col_cotr_img:
+                logo_cotraitant = st.file_uploader("Logo Co-traitant", type=["png", "jpg", "jpeg"], key="logo_cotraitant", label_visibility="collapsed")
+        # ---------------------------------------------
         st.subheader("Comité de Pilotage")
         df_copil = pd.DataFrame([
             {"Nom": "Rémi HOVAERE", "Poste": "Directeur National"},
