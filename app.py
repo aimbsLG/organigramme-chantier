@@ -173,7 +173,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     card.line.width = Pt(0.5)
     card.shadow.inherit = False
 
-    red_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top,  Inches(0.13))
+    red_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left, top, width, Inches(0.13))    
     red_bar.adjustments[0] = 0.25
     red_bar.fill.solid()
     red_bar.fill.fore_color.rgb = COLOR_RED
@@ -223,7 +223,7 @@ def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, heigh
     card.line.color.rgb = COLOR_SAND
     card.shadow.inherit = False
 
-    gre_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top, Inches(0.13))
+    gre_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left, top, width,Inches(0.13))
     gre_bar.adjustments[0] = 0.25
     gre_bar.fill.solid()
     gre_bar.fill.fore_color.rgb = COLOR_GREEN
@@ -281,7 +281,7 @@ def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height
     card.line.color.rgb = COLOR_SAND
     card.shadow.inherit = False
 
-    gri_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top, Inches(0.13))
+    gri_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left, top, width, Inches(0.13))
     gri_bar.adjustments[0] = 0.25
     gri_bar.fill.solid()
     gri_bar.fill.fore_color.rgb = COLOR_TEXT_DARK
