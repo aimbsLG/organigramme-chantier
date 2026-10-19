@@ -521,8 +521,8 @@ def generer_presentation(donnees):
 
     largeur_zone = Inches(1.35)
     hauteur_zone = Inches(0.75)
-    marge_interne_x = Inches(0.10)  # Marges réduites
-    marge_interne_y = Inches(0.10)
+    marge_interne_x = Inches(0.18)  # Marges réduites
+    marge_interne_y = Inches(0.14)
     espace_x = Inches(0.10)         # Espacements réduits
     espace_y = Inches(0.08)
 
