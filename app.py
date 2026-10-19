@@ -515,15 +515,16 @@ def generer_presentation(donnees):
     cadre_moe = slide2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.40), Inches(3.85), Inches(3.20), Inches(1.00))
     cadre_moe.fill.solid()
     cadre_moe.fill.fore_color.rgb = COLOR_WHITE
-    cadre_moe.line.color.rgb = RGBColor(180, 180, 180)
+    cadre_moe.line.color.rgb = COLOR_SAND
+    cadre_moe.line.width = Pt(3.0)  # Bordure plus large
     cadre_moe.shadow.inherit = False
 
     largeur_zone = Inches(1.35)
     hauteur_zone = Inches(0.75)
-    marge_interne_x = Inches(0.18)
-    marge_interne_y = Inches(0.20)
-    espace_x = Inches(0.14)
-    espace_y = Inches(0.12)
+    marge_interne_x = Inches(0.10)  # Marges réduites
+    marge_interne_y = Inches(0.10)
+    espace_x = Inches(0.10)         # Espacements réduits
+    espace_y = Inches(0.08)
 
     nb_entreprises = len(donnees.get("moe", [])) if donnees.get("moe") else 1
     nb_rows = (nb_entreprises + 1) // 2
@@ -531,7 +532,7 @@ def generer_presentation(donnees):
     cadre_moe.height = hauteur_cadre_moe
 
     for idx, moe in enumerate(donnees.get("moe", [])):
-        if idx >= 8: break
+        if idx >= 10: break  # Limite augmentée à 10 pour afficher le 9ème
         col_idx = idx % 2
         row_idx = idx // 2
         x_logo = Inches(0.40) + marge_interne_x + col_idx * (largeur_zone + espace_x)
