@@ -173,7 +173,7 @@ def ajouter_fiche_personne_pptx(slide, role, name, left, top, width, height):
     card.line.width = Pt(0.5)
     card.shadow.inherit = False
 
-    red_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left - Inches(0.01), top, width + Inches(0.02), Inches(0.13))
+    red_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top,  Inches(0.13))
     red_bar.adjustments[0] = 0.25
     red_bar.fill.solid()
     red_bar.fill.fore_color.rgb = COLOR_RED
@@ -223,7 +223,7 @@ def ajouter_fiche_personne_verte_pptx(slide, role, name, left, top, width, heigh
     card.line.color.rgb = COLOR_SAND
     card.shadow.inherit = False
 
-    gre_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left - Inches(0.01), top, width + Inches(0.02), Inches(0.13))
+    gre_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top, Inches(0.13))
     gre_bar.adjustments[0] = 0.25
     gre_bar.fill.solid()
     gre_bar.fill.fore_color.rgb = COLOR_GREEN
@@ -281,7 +281,7 @@ def ajouter_fiche_personne_gris_pptx(slide, role, name, left, top, width, height
     card.line.color.rgb = COLOR_SAND
     card.shadow.inherit = False
 
-    gri_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, left - Inches(0.01), top, width + Inches(0.02), Inches(0.13))
+    gri_bar = slide.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, top, Inches(0.13))
     gri_bar.adjustments[0] = 0.25
     gri_bar.fill.solid()
     gri_bar.fill.fore_color.rgb = COLOR_TEXT_DARK
@@ -332,7 +332,7 @@ def generer_presentation(donnees):
     prs.slide_height = HAUTEUR_PAGE
     blank_layout = prs.slide_layouts[6] 
 
-    fiche_w = Inches(1.39)
+    fiche_w = Inches(1.40)
     fiche_h = Inches(0.82)
     y_sections_titres_bas = Inches(3.85)
     y_fiches_moe = Inches(4.93)
