@@ -656,7 +656,7 @@ with col1:
         ])
         ed_support = st.data_editor(df_support, num_rows="fixed", use_container_width=True, hide_index=True)
         
-        st.subheader("Mainteneur (laisser vide le cas échéant)")
+        st.subheader("Mainteneur ")
         presence_mainteneur = st.checkbox("Ajouter un Mainteneur")
         
         maint_contact = ""
