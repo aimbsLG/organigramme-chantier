@@ -423,10 +423,16 @@ def generer_presentation(donnees):
 
     # MOE
     if donnees["moe"]:
-        ajouter_titre_section_pptx(slide1, "Maîtrise d'oeuvre", Inches(1.295), y_sections_titres_bas, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_GREEN)
+        # Si plus de 6 éléments, on crée un décalage de 0.4 pouces vers le haut
+        decalage_y = Inches(0.4) if len(donnees["moe"]) > 6 else 0
+        
+        y_titre_moe = y_sections_titres_bas - decalage_y
+        y_cartes_moe = y_fiches_moe - decalage_y
+        
+        ajouter_titre_section_pptx(slide1, "Maîtrise d'oeuvre", Inches(1.295), y_titre_moe, Inches(2.4), Inches(0.45), COLOR_SAND, COLOR_GREEN)
         for idx, moe in enumerate(donnees["moe"]):
             x = Inches(0.50) + (idx % 3) * Inches(1.75)
-            y = y_fiches_moe + (idx // 3) * Inches(1.45)
+            y = y_cartes_moe + (idx // 3) * Inches(1.45)
             ajouter_fiche_personne_verte_pptx(slide1, moe["role"], moe["nom"], x, y, fiche_w, fiche_h, image_upload=moe.get("image_upload"))
     maint_contact = ""
     maint_ent = ""
