@@ -424,7 +424,7 @@ def generer_presentation(donnees):
     # MOE
     if donnees["moe"]:
         # Si plus de 6 éléments, on crée un décalage de 0.4 pouces vers le haut
-        decalage_y = Inches(0.4) if len(donnees["moe"]) > 6 else 0
+        decalage_y = Inches(0.55) if len(donnees["moe"]) > 6 else 0
         
         y_titre_moe = y_sections_titres_bas - decalage_y
         y_cartes_moe = y_fiches_moe - decalage_y
